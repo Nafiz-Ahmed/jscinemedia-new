@@ -1,0 +1,50 @@
+/* CustomTab.module.css (copied from NavBar.module.css for tab styling) */
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  background-color: var(--secondary-black);
+  padding: 5px 6px;
+  padding-bottom: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.tab {
+  font-size: var(--small-text);
+  padding: 13px 10px;
+  border-radius: 7px;
+  z-index: inherit;
+  cursor: pointer;
+  color: white;
+  position: relative;
+  transition: color 0.18s ease;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.active {
+  color: var(--accent-color);
+}
+
+/* Active bar that follows active/hovered link */
+.activeBar {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-color: var(--secondary-bg-light);
+  border-radius: 7px;
+  transition: opacity 0.18s ease;
+  will-change: left, top, width, height, opacity;
+}
+
+.button {
+  z-index: 1;
+}

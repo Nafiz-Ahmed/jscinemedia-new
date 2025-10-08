@@ -1,0 +1,11 @@
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.subtitleGray {
+  color: var(--grey-text);
+  margin-top: 20px;
+}

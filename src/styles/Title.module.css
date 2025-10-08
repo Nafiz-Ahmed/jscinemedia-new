@@ -1,0 +1,13 @@
+.title {
+  font-size: var(--secondary-title-text);
+  font-family: var(--font-satoshi);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.title span {
+  font-family: var(--font-instrument-serif);
+  font-style: italic;
+  font-weight: 400;
+}

@@ -1,0 +1,64 @@
+.grid {
+  display: grid;
+  gap: 16px;
+  margin: 0 auto;
+  width: 100%;
+  justify-items: center;
+}
+
+/* Default: 2 columns (YouTube/Podcast) */
+.grid[data-columns="2"] {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 550px));
+  max-width: 1150px; /* (550px * 2) + gap */
+}
+
+/* 4 columns (Reels) */
+.grid[data-columns="4"] {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 280px));
+  max-width: 1168px; /* (280px * 4) + gaps */
+}
+
+/* Mobile: 1 column for landscape videos */
+@media (max-width: 640px) {
+  .grid[data-columns="2"] {
+    grid-template-columns: 1fr;
+    max-width: 550px;
+  }
+
+  /* Mobile: 2 columns for portrait videos */
+  .grid[data-columns="4"] {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 576px; /* (280px * 2) + gap */
+  }
+}
+
+/* Tablet: 2 columns for landscape */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid[data-columns="2"] {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 1150px;
+  }
+
+  /* Tablet: 3 columns for portrait videos */
+  .grid[data-columns="4"] {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 872px; /* (280px * 3) + gaps */
+  }
+}
+
+/* Desktop: Full columns */
+@media (min-width: 1025px) {
+  .grid[data-columns="2"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid[data-columns="4"] {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Ensure videos don't exceed their container */
+.grid > div {
+  width: 100%;
+  max-width: 100%;
+}

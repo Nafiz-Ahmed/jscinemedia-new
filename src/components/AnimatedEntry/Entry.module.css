@@ -1,0 +1,92 @@
+.entry {
+  border-top: 1px solid var(--light-gray);
+  display: grid;
+  place-items: center;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 0;
+}
+
+.text,
+.text::after {
+  position: relative;
+  display: inline-block; /* ensures ::after aligns */
+  font-weight: 600;
+  max-width: 800px;
+  font-size: var(--secondary-title-text);
+  font-family: var(--font-satoshi);
+  line-height: 1.2;
+  color: transparent;
+  text-align: center;
+}
+
+.text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.contents {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+}
+
+.statistics {
+  display: flex;
+  width: 100%;
+  max-width: var(--primary-content-width);
+  margin: var(--margin-auto);
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.statValue {
+  font-size: var(--secondary-title-text);
+  font-weight: 600;
+  line-height: 1.2;
+  font-family: var(--font-satoshi);
+}
+
+.statTitle {
+  font-family: var(--font-satoshi);
+  font-size: var(--semi-large-text);
+  opacity: 0.5;
+  margin-top: 10px;
+  max-width: 300px;
+  text-align: center;
+}
+
+@media screen and (max-width: 1023px) {
+  .statTitle {
+    font-size: var(--semi-medium-text);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .statistics {
+    flex-direction: column;
+    gap: 40px;
+    padding: 40px 0;
+  }
+}

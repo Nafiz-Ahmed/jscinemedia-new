@@ -1,0 +1,134 @@
+.hero {
+  overflow: hidden;
+  position: relative;
+}
+
+.heroWrapper {
+  color: white;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 200px 0 100px 0;
+  transition: opacity 0.5s ease;
+}
+
+.loading {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.heroContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  gap: 25px;
+  width: 100%;
+}
+
+.title {
+  font-size: var(--title-text);
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.title span {
+  font-weight: 400;
+  font-family: var(--font-instrument-serif);
+}
+
+.paragraph {
+  color: var(--grey-text);
+  font-size: var(--paragraph-text);
+  width: 100%;
+  max-width: 550px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.clientHolder {
+  display: flex;
+  gap: 20px;
+}
+
+.clientsImages {
+  display: flex;
+}
+
+.clientsImages > div {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  overflow: hidden;
+  margin-left: -15px; /* Overlap effect */
+}
+
+.clientsImages > div:first-child {
+  margin-left: 0;
+}
+
+.clientsImages > div > img {
+  object-fit: cover;
+}
+
+.clientContent {
+  padding: 5px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: var(--normal-text);
+}
+
+.clientContent > p {
+  color: var(--grey-text);
+}
+
+.button {
+  margin-top: 20px;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  min-width: 200px;
+  height: auto;
+  max-width: 950px;
+  aspect-ratio: 16 / 9;
+  background-color: var(--secondary-bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-top: 50px;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .clientHolder {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .paragraph {
+    line-height: 1.2;
+  }
+
+  .clientContent {
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .card {
+    opacity: 1;
+    visibility: visible;
+    backface-visibility: visible;
+  }
+}

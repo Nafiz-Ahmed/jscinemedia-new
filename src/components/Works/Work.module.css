@@ -1,0 +1,41 @@
+.work {
+  position: relative;
+}
+.projectSwap {
+  display: flex;
+  width: 100%;
+  max-width: var(--primary-content-width);
+  margin: var(--margin-auto);
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 50px 0;
+}
+
+.showProject {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.noVideos,
+.loading {
+  width: 100%;
+  text-align: center;
+  max-width: 500px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--accent-color);
+}
+
+.noVideos {
+  background-color: var(--secondary-bg-light);
+  border-radius: 10px;
+}

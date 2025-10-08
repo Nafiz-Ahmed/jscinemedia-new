@@ -1,0 +1,127 @@
+/* AgencyComparison.module.css */
+.wrapper {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 0;
+  flex-wrap: wrap;
+}
+
+/* My Company Card */
+.myCompanyCard {
+  background-color: var(--secondary-black);
+  border-radius: 16px;
+  padding: 1.5rem;
+  flex: 1;
+  color: white;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  min-width: 350px;
+  max-width: 450px;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo {
+  margin-bottom: 1.5rem;
+  z-index: 2;
+}
+
+.features {
+  margin-bottom: 2rem;
+  z-index: 2;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+}
+
+.featureText {
+  color: #e5e7eb;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.bonusSection {
+  background: var(--secondary-black);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  z-index: 2;
+  position: relative;
+  overflow: hidden;
+}
+
+.bonusTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c7d2fe;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.bonusItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.bonusItem:last-child {
+  margin-bottom: 0;
+}
+
+.bonusIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.bonusText {
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Other Agencies Card */
+.othersCard {
+  background: var(--secondary-black);
+  border-radius: 16px;
+  padding: 1.5rem;
+  flex: 0.9;
+  border: 1px solid var(--border-color);
+  width: 90%;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.othersTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+.drawbacks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.drawback {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.drawbackText {
+  color: #6b7280;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}

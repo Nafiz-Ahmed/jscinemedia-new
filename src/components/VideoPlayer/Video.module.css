@@ -1,0 +1,36 @@
+.muxVideoContainer {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+/* Fade in video smoothly */
+.muxVideoContainer video {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.muxVideoContainer.loaded video {
+  opacity: 1;
+}

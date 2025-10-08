@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100px;
+}
+
+.title > h1 {
+  font-size: var(--secondary-title-text);
+  font-weight: 600;
+  text-align: center;
+}
+
+.calendly {
+  overflow: hidden;
+  width: 100%;
+  max-width: 620px;
+  margin: 60px auto;
+  min-height: 600px;
+}

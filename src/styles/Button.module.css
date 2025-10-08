@@ -1,0 +1,64 @@
+.glowBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 25px;
+  color: black;
+  background-color: var(--accent-color);
+  font-weight: 500;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: rgba(180, 212, 41, 0.5) 0px 8px 40px 0px,
+    rgba(255, 255, 255, 0) 0px 0px 10px 1px inset,
+    rgba(180, 212, 41, 0.12) 0px 0px 0px 1px;
+  transition: all 0.35s ease;
+  z-index: 10;
+  font-size: 14px;
+}
+
+/* Border outline effect */
+.glowBtn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 3px solid rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  transition: all 0.8s ease;
+}
+
+.glowBtn:hover.glowBtn::after {
+  box-shadow: 0 0 0 4px var(--accent-color-low);
+}
+
+/* Dark Variant */
+.glowBtn.dark {
+  color: white;
+  background-color: #1a1a1a;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 8px 40px 0px,
+    rgba(255, 255, 255, 0.05) 0px 0px 10px 1px inset,
+    rgba(0, 0, 0, 0.12) 0px 0px 0px 1px;
+}
+
+.glowBtn.dark::after {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.glowBtn.dark:hover.glowBtn.dark::after {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+/* Subtle Shadow Variant */
+.glowBtn.subtleShadow {
+  box-shadow: rgba(180, 212, 41, 0.3) 0px 4px 20px 0px,
+    rgba(255, 255, 255, 0) 0px 0px 10px 1px inset,
+    rgba(180, 212, 41, 0.08) 0px 0px 0px 1px;
+}
+
+.glowBtn.dark.subtleShadow {
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 20px 0px,
+    rgba(255, 255, 255, 0.05) 0px 0px 10px 1px inset,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}

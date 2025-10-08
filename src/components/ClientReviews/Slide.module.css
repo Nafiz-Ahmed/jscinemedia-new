@@ -1,0 +1,152 @@
+.carouselWrapper {
+  position: relative;
+}
+
+.wrapper {
+  overflow: hidden;
+  width: 100%;
+  max-width: var(--primary-content-width);
+  margin: var(--margin-auto);
+  position: relative;
+  padding: 10px 0;
+
+  /* -webkit-mask: var(--edge-mask);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+
+  mask: var(--edge-mask);
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%; */
+}
+
+.dragging {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.container {
+  display: flex;
+}
+
+.slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+}
+
+.slideContent {
+  width: 300px;
+  aspect-ratio: 9/16;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background-color: var(--light-gray);
+  display: flex;
+  align-items: center;
+  justify-self: center;
+}
+
+.nextButton,
+.prevButton {
+  position: absolute;
+  top: 50%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: var(--light-gray);
+  opacity: 0.8;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.nextButton {
+  right: 0;
+}
+
+.prevButton {
+  left: 0;
+}
+
+.nextButton:hover,
+.prevButton:hover {
+  transform: scale(0.9);
+  transition: all 0.2s ease-in-out;
+}
+
+.clientsData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 50px 0;
+  gap: 30px;
+}
+
+.testimonial {
+  text-align: center;
+  font-size: var(--tertiary-title-text);
+  font-weight: 500;
+  font-family: var(--font-montalban);
+  line-height: 1.2;
+  letter-spacing: -1.12px;
+  width: 100%;
+  max-width: 700px;
+  margin: var(--margin-auto);
+}
+
+.client {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clientPhoto {
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.clientInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.clientName {
+  font-size: var(--semi-large-text);
+  line-height: 1.2;
+  letter-spacing: -1.12px;
+}
+
+.clientRole {
+  font-size: var(--small-text);
+  color: var(--white-text);
+  font-family: var(--font-syne);
+  opacity: 0.6;
+}
+
+@media screen and (max-width: 768px) {
+  .nextButton,
+  .prevButton {
+    width: 50px;
+    height: 50px;
+    /* top: calc(95%); */
+  }
+
+  /* .nextButton {
+    left: 60%;
+  }
+
+  .prevButton {
+    left: 30%;
+  } */
+}

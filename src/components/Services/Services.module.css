@@ -1,0 +1,30 @@
+.servicesSection {
+  padding: 60px 0;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: var(--primary-content-width);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px auto;
+  padding-top: 40px;
+}
+
+.wrapper > div {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+  }
+}

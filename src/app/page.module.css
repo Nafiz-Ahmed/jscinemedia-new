@@ -1,0 +1,25 @@
+.content,
+.content1,
+.content2,
+.content3,
+.content4 {
+  width: 100vw;
+  height: 100vh;
+  background-color: red;
+}
+
+.content1 {
+  background-color: blue;
+}
+
+.content2 {
+  background-color: green;
+}
+
+.content3 {
+  background-color: yellow;
+}
+
+.content4 {
+  background-color: purple;
+}

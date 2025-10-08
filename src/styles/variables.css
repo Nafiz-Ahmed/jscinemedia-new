@@ -1,0 +1,106 @@
+:root {
+  --media-accent-color: var(--light-gray) !important;
+  --media-control-icon-hover-color: var(--accent-color-low) !important;
+  --media-range-bar-color: var(--accent-color) !important;
+  --media-time-range-buffered-color: var(--accent-color-low) !important;
+
+  --primary-content-width: 950px;
+  --grey-text: #a8aeb6;
+  --white-text: #ffffff;
+  --primary-black: #000000;
+  --secondary-black: #070707;
+  --secondary-bg-light: #ffffff0f;
+  --transparent: #fff0;
+  --light-gray: #ffffff38;
+  --white: #ffffff;
+  --accent-color: #b4d429;
+  --accent-color-low: #b5d4292c;
+  --error-color: #ff4d4f;
+  --border-color: rgba(180, 212, 41, 0.1);
+
+  --margin-auto: 0 auto;
+  --small-text: 13px;
+  --normal-text: 16px;
+  --semi-large-text: 20px;
+  --title-text: 64px;
+  --secondary-title-text: 42px;
+  --tertiary-title-text: 26px;
+  --paragraph-text: 18px;
+
+  --box-shadow: 0 0 20px 1px var(--accent-color-low);
+  /* MASK */
+  --edge-mask: linear-gradient(
+    90deg,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  /* BG GLOW VARIABLES */
+  --glow-color: #b4d4291a;
+  --glow-color-two: #b4d4290d;
+  --background-glow-top-left: radial-gradient(
+    50% 50% at 0% 0%,
+    var(--glow-color),
+    var(--glow-color-two) 36.48%,
+    #0a0a0a00
+  );
+  --background-glow-top-right: radial-gradient(
+    50% 50% at 100% 0%,
+    var(--glow-color),
+    var(--glow-color-two) 36.48%,
+    #0a0a0a00
+  );
+  --background-glow-bottom-left: radial-gradient(
+    50% 50% at 0% 100%,
+    var(--glow-color),
+    36.48%,
+    #0a0a0a00
+  );
+  --background-glow-bottom-right: radial-gradient(
+    50% 50% at 100% 100%,
+    var(--glow-color),
+    var(--glow-color-two) 36.48%,
+    #0a0a0a00
+  );
+  --background-glow-center: radial-gradient(
+    50% 50% at 50% 50%,
+    var(--glow-color),
+    var(--glow-color-two) 36.48%,
+    #0a0a0a00
+  );
+  --background-glow-top-center: radial-gradient(
+    50% 50% at 50% 0%,
+    var(--glow-color),
+    var(--glow-color-two) 36.48%,
+    #0a0a0a00
+  );
+}
+
+/* Tablet breakpoint (768px and below) */
+@media (max-width: 768px) {
+  :root {
+    --primary-content-width: 720px;
+    --normal-text: 15px;
+    --semi-large-text: 18px;
+    --title-text: 40px;
+    --secondary-title-text: 28px;
+    --tertiary-title-text: 22px;
+    --paragraph-text: 16px;
+    --box-shadow: 0 0 15px 1px var(--accent-color-low);
+  }
+}
+
+/* Mobile breakpoint (480px and below) */
+@media (max-width: 480px) {
+  :root {
+    --primary-content-width: 100%;
+    --normal-text: 14px;
+    --semi-large-text: 16px;
+    --title-text: 32px;
+    --secondary-title-text: 24px;
+    --tertiary-title-text: 20px;
+    --paragraph-text: 15px;
+    --box-shadow: 0 0 10px 1px var(--accent-color-low);
+  }
+}

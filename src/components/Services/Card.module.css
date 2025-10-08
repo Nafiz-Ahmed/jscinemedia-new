@@ -1,0 +1,43 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  overflow: hidden;
+  padding: clamp(20px, 0.5vw, 30px);
+  width: 100%;
+  max-width: 400px;
+}
+
+.wrapper > h1 {
+  font-size: calc(var(--secondary-title-text) - 5px);
+  font-weight: 600;
+  padding: 10px 0;
+}
+
+.wrapper > p {
+  font-size: var(--normal-text);
+  text-align: center;
+  line-height: 1.4;
+  width: 100%;
+  max-width: 250px;
+}
+
+.button {
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  padding: 15px 20px;
+  /* border-radius: calc(infinity * 1px); */
+  border-radius: 16px;
+  font-size: calc(var(--small-text) + 2px);
+  background-color: var(--accent-color-low);
+  transition: background 0.4s ease;
+}
+
+.button:hover {
+  background-color: var(--accent-color);
+}

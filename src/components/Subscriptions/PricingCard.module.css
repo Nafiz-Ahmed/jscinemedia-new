@@ -1,0 +1,94 @@
+.planCard {
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  max-width: 380px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.recommendedCard {
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.recommendedBadge {
+  font-size: var(--small-text);
+  padding: 10px;
+  width: fit-content;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  border: 1px solid var(--accent-color-low);
+}
+
+.planName {
+  font-weight: 500;
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceContainer {
+  margin-bottom: 16px;
+}
+
+.price {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.period {
+  font-size: 18px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.description {
+  font-size: var(--normal-text);
+  line-height: 1.5;
+  margin-bottom: 24px;
+  opacity: 0.8;
+}
+
+.featuresContainer {
+  flex: 1;
+  padding-top: 20px;
+  margin-top: 30px;
+  border-top: 1px solid var(--border-color);
+}
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.checkIcon {
+  margin-right: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.featureText {
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .recommendedCard {
+    transform: scale(1);
+  }
+}

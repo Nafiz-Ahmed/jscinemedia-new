@@ -1,0 +1,166 @@
+.footer {
+  position: relative;
+}
+
+.container {
+  overflow: hidden;
+  position: relative;
+}
+
+.backgroundBlob1,
+.backgroundBlob2 {
+  position: absolute;
+  z-index: 1;
+
+  filter: blur(70px);
+  opacity: 0.3;
+  width: fit-content;
+  height: fit-content;
+}
+
+.backgroundBlob1 {
+  left: -150px;
+  bottom: 0;
+}
+
+.backgroundBlob2 {
+  right: -10px;
+  top: 0;
+}
+
+.blob {
+  width: 50vw;
+  height: auto;
+  min-width: 300px;
+  max-width: 600px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 80px 0;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.linkList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.link {
+  cursor: pointer;
+  width: fit-content;
+  transition: all 0.3s ease;
+}
+
+.link:hover {
+  color: var(--accent-color);
+  transform: translateX(5px);
+}
+
+.left,
+.center,
+.right {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.center {
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.right {
+  align-items: flex-end;
+  text-align: right;
+  gap: 15px;
+}
+
+.socialItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.socialName {
+  transition: all 0.3s ease;
+}
+
+.socialItem:hover .socialName {
+  transform: translateX(-5px);
+  color: var(--accent-color);
+}
+
+.copyright {
+  text-align: center;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media screen and (max-width: 1023px) {
+  .content {
+    flex-direction: column;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .right,
+  .left,
+  .center {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .center {
+    order: 1;
+  }
+
+  .left {
+    order: 2;
+  }
+
+  .right {
+    order: 3;
+  }
+
+  .iconWrapper {
+    order: 1;
+  }
+
+  .socialName {
+    order: 2;
+  }
+}

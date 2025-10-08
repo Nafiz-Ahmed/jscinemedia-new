@@ -1,0 +1,217 @@
+.footer {
+  padding: 40px 0;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 200px;
+  margin-bottom: 60px;
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.column {
+  flex: 0.4;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.logo {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.cardContainer {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.link {
+  /* color: var(--light-gray); */
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.copyright {
+  text-align: center;
+  font-size: var(--normal-text);
+  padding-top: 40px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 
+
+
+PROFILE CARD
+
+
+
+*/
+
+.profileCard_card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  /* Add these for the 3D effect */
+  transform-style: preserve-3d;
+  perspective: 1000px; /* Define perspective on the element itself */
+  transition: transform 0.3s ease-out; /* Smooth transition for reset */
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.profileCard_content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.profileCard_info {
+  flex: 1;
+}
+
+.profileCard_name {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.profileCard_title {
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 0 0 24px 0;
+  font-weight: 400;
+}
+
+.profileCard_socialLinks {
+  display: flex;
+  gap: 12px;
+}
+
+.profileCard_socialIcon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.profileCard_socialIcon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.profileCard_imageWrapper {
+  flex-shrink: 0;
+  /* Make image responsive to 3D transform */
+  transform: translateZ(
+    100px
+  ); /* Pushes the image slightly forward in 3D space */
+}
+
+.profileCard_image {
+  width: 160px;
+  height: 160px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+    padding: 60px 0 30px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .logoIcon,
+  .logoText {
+    font-size: 24px;
+  }
+
+  .content {
+    flex-direction: column;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+
+  .logo {
+    justify-self: start;
+    margin-bottom: 0;
+  }
+
+  .columnTitle {
+    margin-bottom: 16px;
+  }
+
+  .profileCard_card {
+    padding: 15px;
+  }
+
+  .profileCard_image {
+    width: 130px;
+    height: 130px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 40px 0 24px;
+  }
+
+  .logo {
+    margin-bottom: 32px;
+  }
+
+  .content {
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  .linkList {
+    gap: 12px;
+  }
+}
