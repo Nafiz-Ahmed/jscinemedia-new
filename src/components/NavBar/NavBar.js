@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import styles from "./NavBar.module.css";
 import Container from "@/layouts/Container";
 import { gsap } from "gsap";
@@ -27,7 +33,8 @@ const LINKS = [
 const ANIMATION_DURATION = {
   BAR: 0.36,
   BAR_FADE: 0.18,
-  MOBILE_MENU: 0.3,
+  MOBILE_MENU: 0.5,
+  STAGGER: 0.1,
 };
 
 export default function NavBar() {
@@ -35,6 +42,7 @@ export default function NavBar() {
   const [activeId, setActiveId] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [shouldRenderMenu, setShouldRenderMenu] = useState(false);
 
   // Context
   const { smoother, isMobile, isLoading } = useScroll();
@@ -44,8 +52,10 @@ export default function NavBar() {
   const barRef = useRef(null);
   const linksContainerRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const mobileLinksRef = useRef(null);
+  const mobileOverlayRef = useRef(null);
   const linkRefs = useRef({});
-  const navBarRef = useRef(null); // Ref for the entire NavBar component
+  const navBarRef = useRef(null);
 
   // Animation refs
   const tweenRef = useRef(null);
@@ -149,7 +159,7 @@ export default function NavBar() {
       // Reset states
       setHoveredId(null);
       isMouseOverNavRef.current = false;
-      setIsMobileMenuOpen(false); // Close menu on navigation
+      setIsMobileMenuOpen(false);
       clearAllTimeouts();
       navigateToId(id);
     },
@@ -188,35 +198,6 @@ export default function NavBar() {
     return timeoutId;
   }, [isMobile, addTimeout, animateBarTo, hideBar]);
 
-  // Handle clicks outside the mobile menu
-  const handleClickOutside = useCallback(
-    (event) => {
-      if (
-        isMobileMenuOpen &&
-        mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(event.target) &&
-        navBarRef.current && // Ensure clicks inside the main navbar don't close it
-        !navBarRef.current.contains(event.target)
-      ) {
-        setIsMobileMenuOpen(false);
-      }
-    },
-    [isMobileMenuOpen]
-  );
-
-  // Effect to add/remove click outside listener
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMobileMenuOpen, handleClickOutside]);
-
   // Clear timeouts on unmount
   useEffect(() => {
     return () => {
@@ -239,49 +220,151 @@ export default function NavBar() {
     }
   }, [activeId, hoveredId, isMobile, hideBar]);
 
-  // Mobile menu animation and ScrollSmoother pause
+  // Mobile menu render management
   useEffect(() => {
-    if (!mobileMenuRef.current || !isMobile) return;
-
-    try {
-      const menu = mobileMenuRef.current;
-
-      if (isMobileMenuOpen) {
-        // Store current scroll position
-        scrollPositionRef.current = window.pageYOffset;
-
-        // Animate menu in
-        gsap.set(menu, { display: "flex", opacity: 0, y: -20 });
-        gsap.to(menu, {
-          opacity: 1,
-          y: 0,
-          duration: ANIMATION_DURATION.MOBILE_MENU,
-          ease: "power2.out",
-        });
-
-        // Pause ScrollSmoother
-        if (smoother) {
-          smoother.paused(true);
-        }
-      } else {
-        // Animate menu out
-        gsap.to(menu, {
-          opacity: 0,
-          y: -20,
-          duration: ANIMATION_DURATION.MOBILE_MENU,
-          ease: "power2.out",
-          onComplete: () => gsap.set(menu, { display: "none" }),
-        });
-
-        // Resume ScrollSmoother
-        if (smoother && typeof smoother.paused === "function") {
-          smoother.paused(false);
-        }
+    if (isMobileMenuOpen) {
+      setShouldRenderMenu(true);
+      // Prevent body scroll when menu is open
+      if (smoother) {
+        smoother.paused(true);
       }
-    } catch (error) {
-      console.warn("Mobile menu animation error:", error);
+    } else {
+      // Re-enable body scroll when menu closes
+      if (smoother) {
+        smoother.paused(false);
+      }
     }
-  }, [isMobileMenuOpen, isMobile, smoother]);
+  }, [isMobileMenuOpen, smoother]);
+
+  // Beautiful mobile menu opening animation with elastic effect
+  useLayoutEffect(() => {
+    if (shouldRenderMenu && isMobileMenuOpen) {
+      const menu = mobileMenuRef.current;
+      const linksContainer = mobileLinksRef.current;
+      const overlay = mobileOverlayRef.current;
+
+      if (menu && linksContainer) {
+        const children = gsap.utils.toArray(linksContainer.children);
+
+        // Kill any ongoing animations
+        gsap.killTweensOf([menu, overlay, ...children]);
+
+        // Set initial states
+        gsap.set(menu, {
+          scale: 0.3,
+          opacity: 0,
+          rotationY: -15,
+          transformOrigin: "center top",
+        });
+
+        // Create timeline for smooth sequential animation
+        const tl = gsap.timeline();
+
+        // Animate menu container with elastic effect
+        tl.to(
+          menu,
+          {
+            scale: 1,
+            opacity: 1,
+            rotationY: 0,
+            duration: 0.6,
+            ease: "elastic.out(1, 0.8)",
+          },
+          0.1
+        );
+      }
+    }
+  }, [shouldRenderMenu, isMobileMenuOpen]);
+
+  // Beautiful mobile menu closing animation
+  useLayoutEffect(() => {
+    if (!isMobileMenuOpen && shouldRenderMenu) {
+      const menu = mobileMenuRef.current;
+      const linksContainer = mobileLinksRef.current;
+      const overlay = mobileOverlayRef.current;
+
+      if (menu && linksContainer) {
+        const children = gsap.utils.toArray(linksContainer.children);
+
+        // Kill any ongoing animations
+        gsap.killTweensOf([menu, overlay, ...children]);
+
+        // Create timeline for smooth sequential animation
+        const tl = gsap.timeline({
+          onComplete: () => {
+            setShouldRenderMenu(false);
+          },
+        });
+
+        // Animate children out first with elastic effect
+        tl.to(
+          children,
+          {
+            y: -20,
+            opacity: 0,
+            scale: 0.9,
+            rotationX: -30,
+            duration: 0.3,
+            stagger: {
+              amount: 0.15,
+              from: "end",
+            },
+            ease: "back.in(1.7)",
+          },
+          0
+        );
+
+        // Animate menu container out
+        tl.to(
+          menu,
+          {
+            scale: 0.4,
+            opacity: 0,
+            rotationY: 15,
+            duration: 0.4,
+            ease: "back.in(1.7)",
+          },
+          0.1
+        );
+
+        // Fade out overlay
+        tl.to(
+          overlay,
+          {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power2.in",
+          },
+          0.2
+        );
+      } else {
+        setShouldRenderMenu(false);
+      }
+    }
+  }, [isMobileMenuOpen, shouldRenderMenu]);
+
+  // Click outside to close mobile menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        navBarRef.current &&
+        !navBarRef.current.contains(event.target)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   // ScrollTrigger setup
   useGSAP(
@@ -359,7 +442,7 @@ export default function NavBar() {
 
   return (
     <div
-      ref={navBarRef} // Attach ref to the main NavBar div
+      ref={navBarRef}
       style={{
         opacity: isLoading ? 0 : 1,
       }}
@@ -437,39 +520,43 @@ export default function NavBar() {
           )}
         </div>
 
-        {/* Mobile Menu */}
-        {isMobile && (
-          <div
-            ref={mobileMenuRef}
-            className={`${styles.mobileMenu} ${
-              isMobileMenuOpen ? styles.open : ""
-            }`}
-            style={{ display: "none" }}
-          >
-            <div className={styles.mobileLinks}>
-              {LINKS.map(({ id, label }) => (
-                <div
-                  key={id}
-                  className={`${styles.mobileLink} ${
-                    activeId === id ? styles.active : ""
-                  }`}
-                  onClick={(e) => handleNavigationClick(e, id)}
-                >
-                  {label}
-                </div>
-              ))}
+        {/* Mobile Menu with Overlay */}
+        {isMobile && shouldRenderMenu && (
+          <>
+            {/* Backdrop overlay */}
+            <div
+              className={styles.mobileOverlay}
+              ref={mobileOverlayRef}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-              <div className={styles.mobileCTA}>
-                <Button
-                  shadow="subtle"
-                  whatsApp
-                  style={{ width: "100%", maxWidth: "280px" }}
-                >
-                  Let&apos;s talk
-                </Button>
+            {/* Menu content */}
+            <div className={styles.mobileMenu} ref={mobileMenuRef}>
+              <div className={styles.mobileLinks} ref={mobileLinksRef}>
+                {LINKS.map(({ id, label }) => (
+                  <div
+                    key={id}
+                    className={`${styles.mobileLink} ${
+                      activeId === id ? styles.active : ""
+                    }`}
+                    onClick={(e) => handleNavigationClick(e, id)}
+                  >
+                    {label}
+                  </div>
+                ))}
+
+                <div className={styles.mobileCTA}>
+                  <Button
+                    shadow="subtle"
+                    whatsApp
+                    style={{ width: "100%", maxWidth: "280px" }}
+                  >
+                    Let&apos;s talk
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </Container>
     </div>

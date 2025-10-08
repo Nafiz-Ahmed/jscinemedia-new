@@ -190,7 +190,11 @@ function Hero() {
             </div>
 
             <div ref={cardRef} className={`addAnimation ${styles.card}`}>
-              <Video maxWidth={false} playbackId={VSL_VIDEO} />
+              <Video
+                maxWidth={false}
+                playbackId={VSL_VIDEO}
+                thumbnailTime={10}
+              />
             </div>
           </div>
         </div>

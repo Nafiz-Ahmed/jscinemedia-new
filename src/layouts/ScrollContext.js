@@ -397,19 +397,9 @@ export function ScrollProvider({ children }) {
     return cleanup;
   }, [createSmoother, cleanup]);
 
-  useEffect(() => {
-    if (isReady && smootherRef.current) {
-      // Scroll to top when smoother is ready
-      try {
-        smootherRef.current.scrollTo(0, false); // Immediate scroll to top (no smooth animation)
-        if (process.env.NODE_ENV === "development") {
-          console.log("Scrolled to top on page load/refresh");
-        }
-      } catch (error) {
-        console.warn("Failed to scroll to top on page load:", error);
-      }
-    }
-  }, [isReady]);
+  // Removed auto-scroll to top on page ready to prevent animation disruption
+  // The browser naturally starts at the top on fresh page loads
+  // For back/forward cache (bfcache), the handlePageShow already handles it if needed
 
   // Page lifecycle events
   useEffect(() => {

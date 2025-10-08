@@ -1,8 +1,13 @@
 import React from "react";
 import styles from "@/styles/Title.module.css";
+import Container from "./Container";
 
 function Title({ children }) {
-  return <div className={styles.title}>{children}</div>;
+  return (
+    <Container>
+      <div className={styles.title}>{children}</div>
+    </Container>
+  );
 }
 
 export default Title;

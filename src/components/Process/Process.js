@@ -17,9 +17,9 @@ const ANIMATION_CONFIG = {
   cardStagger: 0.15,
   cardDuration: 1.2,
   cardEase: "elastic.out(1, 0.6)",
-  svgDuration: 2,
+  svgDuration: 1.5,
   svgEase: "power2.inOut",
-  svgDelay: 0.3,
+  svgDelay: 0.1,
   triggerOffset: 100,
   svgAnimationMode: "simultaneous",
 };

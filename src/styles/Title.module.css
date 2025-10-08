@@ -4,6 +4,7 @@
   font-weight: 500;
   line-height: 1.2;
   text-align: center;
+  text-wrap: wrap;
 }
 
 .title span {

@@ -30,7 +30,7 @@ const VIDEOS_DATA_TYPE_1 = [
     title: "YouTube 3",
     playbackId: "5tHkEqWaYTKOwgS4NJ7rSViFdDX0001Zgg2CqzZYdlHrQ",
     poster: null,
-    thumbnailTime: 0,
+    thumbnailTime: 81,
   },
   {
     id: 4,
@@ -196,7 +196,7 @@ function Work() {
                   poster={video.poster}
                   onVideoLoad={() => handleVideoLoad(typeId, video.id)}
                   aspectRatioSet={columns}
-                  // thumbnailTime=}
+                  thumbnailTime={video.thumbnailTime}
                 />
               </div>
             ))}
