@@ -15,9 +15,9 @@
   padding: 1.5rem;
   flex: 1;
   color: white;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--accent-color);
   width: 100%;
-  min-width: 350px;
+  min-width: 300px;
   max-width: 450px;
   position: relative;
   overflow: hidden;

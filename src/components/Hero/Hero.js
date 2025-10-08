@@ -12,6 +12,7 @@ import GradientText from "@/layouts/GradientText";
 import CustomTab from "../CustomTab/CustomTab";
 import Video from "../VideoPlayer/Video";
 import LoadingScreen from "../LoadingScreen/LoadingScreen";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation"; // Import the hook
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,11 +55,23 @@ function Hero() {
     useScroll();
   const tl = useRef(null);
   const navigateToId = useNavigateToId();
-  const titleRef = useRef(null);
   const descriptionRef = useRef(null);
   const clientRef = useRef(null);
   const buttonRef = useRef(null);
   const heroTl = useRef(null);
+
+  // Use the text reveal animation hook for the title
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+    delay: 0.2,
+    yOffset: 40,
+    blur: 10,
+    stagger: 0.1,
+    duration: 1,
+    ease: "power2.out",
+    scrollTriggerStart: "top bottom-=100px",
+    enabled: true,
+  });
 
   const handleWatchDemo = () => {
     navigateToId("work");
@@ -143,8 +156,8 @@ function Hero() {
           }}
         >
           <div className={styles.heroContent}>
-            <div style={{ maxWidth: "900px" }} ref={titleRef}>
-              <div className={styles.title}>
+            <div style={{ maxWidth: "900px" }}>
+              <div className={styles.title} ref={titleRef}>
                 <span
                   style={{
                     fontFamily: "var(--font-instrument-serif)",

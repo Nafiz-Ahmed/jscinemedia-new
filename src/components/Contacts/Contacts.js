@@ -8,8 +8,15 @@ import { useInView } from "@/hooks/useInView";
 import { TailChase } from "ldrs/react";
 import "ldrs/react/TailChase.css";
 import Title from "@/layouts/Title";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
 function Contacts() {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
+
   const [height, setHeight] = useState("600px");
   const { ref, isInView } = useInView({ threshold: 0.25 });
 
@@ -20,7 +27,7 @@ function Contacts() {
   return (
     <Container>
       <div className={styles.wrapper}>
-        <div className={styles.title}>
+        <div ref={titleRef} className={styles.title}>
           <Title>
             Ready to <span>level up?</span> Let’s connect.
           </Title>

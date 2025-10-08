@@ -8,6 +8,8 @@ import Title from "@/layouts/Title";
 import CustomTab from "../CustomTab/CustomTab";
 import { useNavigateToId } from "@/layouts/ScrollContext";
 import goWP from "@/utils/goWP";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
 // Plan data with monthly and yearly pricing + period
 const PLANS = [
@@ -84,6 +86,10 @@ const PLANS = [
 
 // Main component showing all plans
 const Subscriptions = () => {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
   const [period, setPeriod] = useState("monthly");
   const navigateToId = useNavigateToId();
 
@@ -111,9 +117,11 @@ const Subscriptions = () => {
   return (
     <Container>
       <div className={styles.wrapper}>
-        <Title>
-          Choose your perfect <span>plan</span>.
-        </Title>
+        <div ref={titleRef}>
+          <Title>
+            Choose your perfect <span>plan</span>.
+          </Title>
+        </div>
         <CustomTab elements={TABDATA} defaultSelected={1} />
         <div className={styles.pricingPlan}>
           {PLANS.map((plan) => (

@@ -35,14 +35,14 @@ export default function Home() {
         <AgencyComparison />
       </div>
 
+      <div id="process">
+        <Process />
+      </div>
+
       {/* Client Reviews section */}
       <div id="review">
         <Reviews />
       </div>
-
-      {/* <div id="process">
-        <Process />
-      </div> */}
 
       <div id="services">
         <Services />

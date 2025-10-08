@@ -1,12 +1,21 @@
 "use client";
+
 import { useState } from "react";
 import styles from "./FAQ.module.css";
 import Container from "@/layouts/Container";
 import { RightArrow } from "@/utils/Icons";
 import BackgroundGlow from "@/layouts/BackgroundGlow";
 import Title from "@/layouts/Title";
+import Button from "@/layouts/Button";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
 const FAQ = () => {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
+
   const faqData = [
     {
       question: "What if I don’t like the first edit?",
@@ -63,8 +72,6 @@ const FAQ = () => {
   const renderFAQ = (data) =>
     data.map((faq, index) => (
       <div key={index} onClick={handleClick} className={styles.faqItem}>
-        <BackgroundGlow width="70%" minWidth="auto" left="50%" top="50%" />
-
         <div className={styles.faqQuestion}>
           <div className={styles.questionText}>{faq.question}</div>
           <div className={`${styles.faqIcon}`}>
@@ -81,12 +88,24 @@ const FAQ = () => {
   return (
     <Container>
       <div className={styles.wrapper}>
-        <Title>
-          Frequently Asked <span>Questions</span>.
-        </Title>
+        <div ref={titleRef}>
+          <Title>
+            Frequently Asked <span>Questions</span>.
+          </Title>
+        </div>
         <div className={styles.faqContainer}>
           <div className={styles.faqColumn}>{renderFAQ(firstHalf)}</div>
           <div className={styles.faqColumn}>{renderFAQ(secondHalf)}</div>
+          <div className={styles.extra}>
+            <h1>Still have questions?</h1>
+            <p>
+              If you have any other questions, feel free to reach out.
+              We&apos;re here to help!
+            </p>
+            <Button whatsApp shadow="subtle">
+              Let&apos;s Chat
+            </Button>
+          </div>
         </div>
       </div>
     </Container>

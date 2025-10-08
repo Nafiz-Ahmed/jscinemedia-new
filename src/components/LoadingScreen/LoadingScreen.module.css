@@ -24,7 +24,8 @@
 
 .loadingText {
   font-size: clamp(24px, 5vw, 48px);
-  font-family: var(--font-montalban);
+  font-family: var(--font-satoshi);
+  font-weight: 700;
   white-space: nowrap;
   line-height: 1;
   overflow: hidden;

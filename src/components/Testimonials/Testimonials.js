@@ -6,6 +6,8 @@ import React from "react";
 import InfiniteScrollCarousel from "@/layouts/InfiniteScrollCarousel";
 import styles from "./Testimonials.module.css";
 import TestimonialCard from "./TestimonialCard";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
 const TESTIMONIALS = [
   {
@@ -67,10 +69,15 @@ const TESTIMONIALS = [
 ];
 
 function Testimonials() {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
+
   return (
     <div className={styles.testimonialSection}>
       <Container>
-        <div style={{ marginBottom: "40px" }}>
+        <div ref={titleRef} style={{ marginBottom: "40px" }}>
           <Title>
             Simply, they <span>believe</span> in us.
           </Title>

@@ -3,14 +3,13 @@
 }
 
 .wrapper {
-  width: 100%;
+  width: fit-content;
   max-width: var(--primary-content-width);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 15px;
-  margin: 30px auto;
   padding-top: 40px;
+  margin: 0 auto;
 }
 
 .wrapper > div {
@@ -19,12 +18,17 @@
   position: relative;
   gap: 15px;
   width: 100%;
+  min-width: 320px;
   max-width: 400px;
-  margin: 0 auto;
 }
 
 @media screen and (max-width: 768px) {
   .wrapper {
-    flex-direction: column;
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .wrapper > div {
+    margin: 0 auto;
   }
 }

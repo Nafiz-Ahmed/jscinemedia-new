@@ -1,264 +1,155 @@
-"use client";
-import React, {
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import React, { useEffect, useRef } from "react";
 
-const MovingCirclesBackground = () => {
+const MovingCirclesBackground = ({
+  circleCount = 40,
+  minRadius = 120,
+  maxRadius = 230,
+  blackRatio = 0.7,
+  glowColor = "#b4d429",
+  glowIntensity = 60,
+}) => {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const animationRef = useRef(null);
   const circlesRef = useRef([]);
   const lastTimeRef = useRef(0);
-  const contextRef = useRef(null);
-  const isInitializedRef = useRef(false);
 
-  // Pre-computed config
-  const config = useMemo(() => {
-    const circleCount = 55;
-    const colors = ["#b5d42985", "#000000"]; // two distinct colors
-    const randoms = new Float32Array(circleCount * 6);
+  const config = {
+    count: circleCount,
+    minSpeed: 0.9,
+    maxSpeed: 2,
+    blackRatio,
+    glowIntensity,
+    glowColor,
+    minRadius,
+    maxRadius,
+  };
 
-    if (typeof window !== "undefined" && window.crypto) {
-      const cryptoArray = new Uint32Array(circleCount * 6);
-      window.crypto.getRandomValues(cryptoArray);
-      for (let i = 0; i < cryptoArray.length; i++) {
-        randoms[i] = cryptoArray[i] / 4294967295;
-      }
-    } else {
-      for (let i = 0; i < randoms.length; i++) randoms[i] = Math.random();
-    }
+  const initCircles = (canvas) => {
+    const circles = [];
 
-    return {
-      CIRCLE_COUNT: circleCount,
-      MIN_SPEED: 0.5,
-      MAX_SPEED: 2,
-      COLORS: colors,
-      PRE_RANDOMS: randoms,
-    };
-  }, []);
+    const blackCount = Math.floor(config.count * config.blackRatio);
+    const glowCount = config.count - blackCount;
 
-  const [radiusRange, setRadiusRange] = useState({
-    minRadius: 50,
-    maxRadius: 180,
-  });
+    const allColors = [
+      ...Array(blackCount).fill("#000000"),
+      ...Array(glowCount).fill(config.glowColor),
+    ];
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const vw = window.innerWidth;
-      const minRadius = Math.max(50, vw * 0.15);
-      const maxRadius = Math.min(180, vw * 0.25);
-      setRadiusRange({ minRadius, maxRadius });
-    }
-  }, []);
+    // Shuffle colors for random distribution
+    allColors.sort(() => Math.random() - 0.5);
 
-  const initCircles = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    for (let i = 0; i < config.count; i++) {
+      const speed =
+        (Math.random() - 0.5) * (config.maxSpeed - config.minSpeed) +
+        config.minSpeed;
+      const radius =
+        Math.random() * (config.maxRadius - config.minRadius) +
+        config.minRadius;
 
-    const w = canvas.width;
-    const h = canvas.height;
-    const { minRadius, maxRadius } = radiusRange;
-    const rDiff = maxRadius - minRadius;
-    const speedRange = config.MAX_SPEED - config.MIN_SPEED;
-
-    let circles = circlesRef.current;
-    if (circles.length !== config.CIRCLE_COUNT) {
-      circles = new Array(config.CIRCLE_COUNT);
-      circlesRef.current = circles;
-    }
-
-    const randoms = config.PRE_RANDOMS;
-    const colorCount = config.COLORS.length;
-
-    for (let i = 0; i < config.CIRCLE_COUNT; i++) {
-      const base = i * 6;
-      const r0 = randoms[base];
-      const r1 = randoms[base + 1];
-      const r2 = randoms[base + 2];
-      const r3 = randoms[base + 3];
-      const r4 = randoms[base + 4];
-      const r5 = randoms[base + 5];
-
-      if (!circles[i]) circles[i] = {};
-
-      const c = circles[i];
-      c.x = r0 * w;
-      c.y = r1 * h;
-      c.vx = (r2 - 0.5) * speedRange + config.MIN_SPEED;
-      c.vy = (r3 - 0.5) * speedRange + config.MIN_SPEED;
-      c.radius = r4 * rDiff + minRadius;
-      c.colorIndex = Math.floor(r5 * colorCount); // ensures mixed colors
-    }
-  }, [config, radiusRange]);
-
-  const updateCircles = useCallback((deltaTime) => {
-    const circles = circlesRef.current;
-    const canvas = canvasRef.current;
-    if (!canvas || !circles) return;
-
-    const w = canvas.width;
-    const h = canvas.height;
-    const t = deltaTime * 60;
-
-    for (let i = 0; i < circles.length; i++) {
-      const c = circles[i];
-      const nx = c.x + c.vx * t;
-      const ny = c.y + c.vy * t;
-      const r = c.radius;
-
-      if (nx <= r) {
-        c.x = r;
-        c.vx = -c.vx;
-      } else if (nx >= w - r) {
-        c.x = w - r;
-        c.vx = -c.vx;
-      } else {
-        c.x = nx;
-      }
-
-      if (ny <= r) {
-        c.y = r;
-        c.vy = -c.vy;
-      } else if (ny >= h - r) {
-        c.y = h - r;
-        c.vy = -c.vy;
-      } else {
-        c.y = ny;
-      }
-    }
-  }, []);
-
-  const render = useCallback(() => {
-    const ctx = contextRef.current;
-    const canvas = canvasRef.current;
-    const circles = circlesRef.current;
-    if (!ctx || !canvas || !circles) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.globalCompositeOperation = "source-over"; // normal blending for clarity
-
-    const colors = config.COLORS;
-
-    for (let colorIndex = 0; colorIndex < colors.length; colorIndex++) {
-      const color = colors[colorIndex];
-      ctx.fillStyle = color;
-
-      // Glow only for #b5d42985
-      if (color === "#b5d42985") {
-        ctx.shadowBlur = 150;
-        ctx.shadowColor = "#b5d429";
-        ctx.globalCompositeOperation = "lighter"; // additive blending for glow
-      } else {
-        ctx.shadowBlur = 0;
-        ctx.shadowColor = "transparent";
-        ctx.globalCompositeOperation = "source-over";
-      }
-
-      ctx.beginPath();
-      for (let i = 0; i < circles.length; i++) {
-        const c = circles[i];
-        if (c.colorIndex === colorIndex) {
-          ctx.moveTo(c.x + c.radius, c.y);
-          ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
-        }
-      }
-      ctx.fill();
-    }
-
-    ctx.globalCompositeOperation = "source-over";
-  }, [config.COLORS]);
-
-  const animate = useCallback(
-    (time) => {
-      if (!isInitializedRef.current) return;
-      const delta = (time - lastTimeRef.current) / 1000;
-      lastTimeRef.current = time;
-
-      if (delta > 0 && delta < 0.1) {
-        updateCircles(delta);
-        render();
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
-    },
-    [updateCircles, render]
-  );
-
-  const handleResize = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-
-    if (!contextRef.current) {
-      contextRef.current = canvas.getContext("2d", {
-        alpha: false,
-        desynchronized: true,
+      circles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: speed,
+        vy: speed,
+        radius,
+        color: allColors[i],
+        z: Math.random(),
       });
     }
 
-    const ctx = contextRef.current;
-    ctx.scale(dpr, dpr);
-    ctx.imageSmoothingEnabled = false;
+    circlesRef.current = circles.sort((a, b) => a.z - b.z);
+  };
 
-    initCircles();
-  }, [initCircles]);
-
-  const initialize = useCallback(() => {
+  const animate = (time) => {
     const canvas = canvasRef.current;
-    if (!canvas || isInitializedRef.current) return;
-    handleResize();
-    isInitializedRef.current = true;
-    lastTimeRef.current = performance.now();
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const delta = Math.min((time - lastTimeRef.current) / 1000, 0.1);
+    lastTimeRef.current = time;
+
+    circlesRef.current.forEach((c) => {
+      c.x += c.vx * delta * 60;
+      c.y += c.vy * delta * 60;
+
+      if (c.x - c.radius <= 0 || c.x + c.radius >= canvas.width) {
+        c.vx *= -1;
+        c.x = Math.max(c.radius, Math.min(canvas.width - c.radius, c.x));
+      }
+      if (c.y - c.radius <= 0 || c.y + c.radius >= canvas.height) {
+        c.vy *= -1;
+        c.y = Math.max(c.radius, Math.min(canvas.height - c.radius, c.y));
+      }
+    });
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    circlesRef.current.forEach((c) => {
+      if (c.color === config.glowColor) {
+        ctx.shadowBlur = config.glowIntensity;
+        ctx.shadowColor = config.glowColor;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.fillStyle = c.color;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    ctx.shadowBlur = 0;
     animationRef.current = requestAnimationFrame(animate);
-  }, [animate, handleResize]);
+  };
+
+  const handleResize = () => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    initCircles(canvas);
+  };
 
   useEffect(() => {
-    if (typeof window !== "undefined") initialize();
+    handleResize();
+    lastTimeRef.current = performance.now();
+    animationRef.current = requestAnimationFrame(animate);
 
-    let resizeTimeout;
-    const throttledResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(handleResize, 100);
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", throttledResize, { passive: true });
-    }
-
+    window.addEventListener("resize", handleResize);
     return () => {
-      isInitializedRef.current = false;
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      if (typeof window !== "undefined") {
-        window.removeEventListener("resize", throttledResize);
-      }
-      clearTimeout(resizeTimeout);
+      cancelAnimationFrame(animationRef.current);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [initialize, handleResize]);
+  }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      ref={containerRef}
       style={{
         position: "absolute",
         top: 0,
         left: 0,
         width: "100%",
         height: "100%",
+        zIndex: -10,
         pointerEvents: "none",
-        zIndex: -1,
-        filter: "blur(40px)", // crisp, deep glow
-        willChange: "transform",
-        transform: "translateZ(0)",
-        backfaceVisibility: "hidden",
+        filter: "blur(75px)",
       }}
-    />
+    >
+      <canvas
+        ref={canvasRef}
+        style={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+        }}
+      />
+    </div>
   );
 };
 

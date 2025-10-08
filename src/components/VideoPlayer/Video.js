@@ -10,7 +10,8 @@ const Video = ({
   autoPlay = false,
   loop = false,
   controls = true,
-  thumbnailTime = 0,
+  thumbnailTime = 0, // default to 0s if not provided
+  poster = null, // optional custom poster URL
   className = "",
   setVisible,
   onVideoLoad,
@@ -23,12 +24,15 @@ const Video = ({
   const { refresh } = useScroll();
   const hasCalledLoad = useRef(false);
 
-  // Generate thumbnail URL immediately
-  const posterUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg?time=${thumbnailTime}&width=640`;
+  // Generate thumbnail URL immediately. Prefer provided poster.
+  const generatedPosterUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg?time=${thumbnailTime}&width=640`;
+  const posterUrl = poster || generatedPosterUrl;
 
   // Preload the poster image and get aspect ratio
   useEffect(() => {
     const img = new Image();
+    // Use CORS anonymous in case of external images
+    img.crossOrigin = "anonymous";
     img.src = posterUrl;
 
     img.onload = () => {
@@ -88,6 +92,8 @@ const Video = ({
 
   // Show loading state until aspect ratio is determined and ready
   if (!isReady || !aspectRatio) {
+    // Reserve layout space to prevent layout shift by using the expected aspect ratio
+    // and forcing the container to fill available width from the grid.
     return (
       <div
         className={`${styles.muxVideoContainer} ${styles.skeleton} ${className}`}

@@ -7,27 +7,37 @@ import Title from "@/layouts/Title";
 import Grid from "@/layouts/Grid";
 import Video from "../VideoPlayer/Video";
 import CustomTab from "../CustomTab/CustomTab";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
 const VIDEOS_DATA_TYPE_1 = [
   {
     id: 1,
     title: "YouTube 1",
     playbackId: "hmxBOg3HaJ5fQt2PXuxnlOqexaQ00W26OvviWBRCVGBw",
+    poster: null, // optional custom poster URL
+    thumbnailTime: 0,
   },
   {
     id: 2,
     title: "YouTube 2",
     playbackId: "2qBj9oqqfya7gbj2sOym9ZuZdtV02kuhfFWFVN301815g",
+    poster: null,
+    thumbnailTime: 0,
   },
   {
     id: 3,
     title: "YouTube 3",
     playbackId: "5tHkEqWaYTKOwgS4NJ7rSViFdDX0001Zgg2CqzZYdlHrQ",
+    poster: null,
+    thumbnailTime: 0,
   },
   {
     id: 4,
     title: "YouTube 4",
     playbackId: "ltDd7gahKJMvwWLXb7ljLuxIMq00WsluZOCe7FCbU7zE",
+    poster: null,
+    thumbnailTime: 2,
   },
 ];
 
@@ -36,21 +46,29 @@ const VIDEOS_DATA_TYPE_2 = [
     id: 1,
     title: "Reels 1",
     playbackId: "CSl4KLDPtWZt2UJ9Jf02M6GpPEA1qWXzBhDWTbJrsrgw",
+    poster: null,
+    thumbnailTime: 0,
   },
   {
     id: 2,
     title: "Reels 2",
     playbackId: "ILFe02qfgN01RfnDx8b3xkc544YkxhLxynEGvUReDkqGw",
+    poster: null,
+    thumbnailTime: 0,
   },
   {
     id: 3,
     title: "Reels 3",
     playbackId: "aKS1KSoiDchKRt8UUnDm65golXoVUNLMlrYjem4nPPE",
+    poster: null,
+    thumbnailTime: 2,
   },
   {
     id: 4,
     title: "Reels 4",
     playbackId: "9VP009cC1naNfFz9g6V9j1gst01ZH7ZWjbf2a2VadyY02k",
+    poster: null,
+    thumbnailTime: 4,
   },
 ];
 
@@ -59,16 +77,22 @@ const VIDEOS_DATA_TYPE_3 = [
     id: 1,
     title: "Podcast 1",
     playbackId: "otJaDN8UmOcK87Xs24XSxgWQ6s0018I0102wyI92MBmvYg",
+    poster: null,
+    thumbnailTime: 0,
   },
   {
     id: 2,
     title: "Podcast 2",
     playbackId: "42yAN2l7K9XyOg6mO7Ce01MZDXfok4hsLsELzRum9nu8",
+    poster: null,
+    thumbnailTime: 0,
   },
   {
     id: 3,
     title: "Podcast 3",
     playbackId: "xCIQJNzYyaoDv7X7naFq01LvYeoELmHKjgjnUEX202tao",
+    poster: null,
+    thumbnailTime: 0,
   },
 ];
 
@@ -79,6 +103,11 @@ const NoVideos = ({ message = "No videos available for this category" }) => (
 );
 
 function Work() {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
+
   const PROJECT_TYPES = [
     {
       id: 1,
@@ -154,7 +183,7 @@ function Work() {
         key={typeId}
         style={{
           display: isActive ? "block" : "none",
-          width: "fit-content",
+          width: "100%",
           margin: "0 auto",
         }}
       >
@@ -164,8 +193,10 @@ function Work() {
               <div className={styles.video} key={`${typeId}-${video.id}`}>
                 <Video
                   playbackId={video.playbackId}
+                  poster={video.poster}
                   onVideoLoad={() => handleVideoLoad(typeId, video.id)}
                   aspectRatioSet={columns}
+                  // thumbnailTime=}
                 />
               </div>
             ))}
@@ -178,9 +209,11 @@ function Work() {
   return (
     <section className={styles.work}>
       <Container>
-        <Title>
-          See the impact of <span>our work</span>.
-        </Title>
+        <div ref={titleRef}>
+          <Title>
+            See the impact of <span>our work</span>.
+          </Title>
+        </div>
         <div className={styles.projects}>
           <div className={styles.projectSwap}>
             <CustomTab elements={PROJECT_TYPES} defaultSelected={1} />

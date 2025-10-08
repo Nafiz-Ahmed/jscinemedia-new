@@ -1,8 +1,12 @@
+"use client";
+
 import Title from "@/layouts/Title";
 import React from "react";
 import Container from "@/layouts/Container";
 import styles from "./Services.module.css";
 import Card from "./Card";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
 const OFFERINGS_ONE = [
   {
@@ -47,12 +51,19 @@ const OFFERINGS_TWO = [
 ];
 
 function Services() {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
+
   return (
     <div className={styles.servicesSection}>
       <Container>
-        <Title>
-          Explore what we <span>offer</span>.
-        </Title>
+        <div ref={titleRef}>
+          <Title>
+            Explore what we <span>offer</span>.
+          </Title>
+        </div>
         <div className={styles.wrapper}>
           <div>
             {OFFERINGS_ONE.map((offer) => (

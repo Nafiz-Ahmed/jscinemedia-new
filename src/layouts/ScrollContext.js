@@ -57,6 +57,8 @@ export function ScrollProvider({ children }) {
     return false;
   });
 
+  const cursorRef = useRef(null);
+
   useEffect(() => {
     if (!smoother) return;
     smoother.paused(isLoading);
@@ -482,6 +484,70 @@ export function ScrollProvider({ children }) {
     };
   }, [debouncedRefresh]);
 
+  // Cursor follower setup
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    if (!cursor || isMobile || isTablet) return;
+
+    gsap.set(cursor, { opacity: 0, scale: 0 });
+
+    const showCursor = () => {
+      gsap
+        .timeline()
+        .to(cursor, { opacity: 1, duration: 0.1 })
+        .to(cursor, { scale: 1.2, duration: 0.2, ease: "power2.out" })
+        .to(cursor, { scale: 0.9, duration: 0.15, ease: "power2.inOut" })
+        .to(cursor, { scale: 1.1, duration: 0.1, ease: "power2.inOut" })
+        .to(cursor, { scale: 0.95, duration: 0.1, ease: "power2.inOut" })
+        .to(cursor, { scale: 1, duration: 0.1, ease: "power2.inOut" });
+    };
+
+    const hideCursor = () => {
+      gsap.to(cursor, { opacity: 0, scale: 0, duration: 0.2 });
+    };
+
+    const moveCursor = (e) => {
+      if (parseFloat(cursor.style.opacity) === 0) {
+        showCursor();
+      }
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 1.5,
+        ease: "elastic.out(1, 0.5)",
+        overwrite: "auto",
+      });
+    };
+
+    const onMouseDown = () => {
+      gsap.to(cursor, {
+        scale: 0.8,
+        duration: 0.2,
+        ease: "power2.out",
+      });
+    };
+
+    const onMouseUp = () => {
+      gsap.to(cursor, {
+        scale: 1,
+        duration: 0.2,
+        ease: "power2.out",
+      });
+    };
+
+    document.addEventListener("mousemove", moveCursor);
+    document.addEventListener("mouseleave", hideCursor);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", moveCursor);
+      document.removeEventListener("mouseleave", hideCursor);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [isMobile, isTablet]);
+
   // HMR cleanup for development
   if (
     process.env.NODE_ENV === "development" &&
@@ -678,6 +744,23 @@ export function ScrollProvider({ children }) {
       <div id="smooth-wrapper">
         <div id="smooth-content">{children}</div>
       </div>
+
+      {!isMobile && !isTablet && (
+        <div
+          ref={cursorRef}
+          style={{
+            position: "fixed",
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            backgroundColor: "#b4d429",
+            pointerEvents: "none",
+            zIndex: 999999,
+            transform: "translate(-50%, -50%)",
+            mixBlendMode: "difference",
+          }}
+        />
+      )}
     </ScrollContext.Provider>
   );
 }

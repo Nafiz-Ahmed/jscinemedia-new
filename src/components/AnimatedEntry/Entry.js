@@ -23,7 +23,12 @@ const STATS_DATA = Object.freeze([
 
 const ANIMATION_CONFIG = Object.freeze({
   text: {
-    scrollTrigger: { start: "top bottom", end: "bottom 40%", scrub: true },
+    scrollTrigger: {
+      start: "top bottom-=500px",
+      end: "bottom 40%",
+      scrub: true,
+      markers: true,
+    },
     animation: { color: "white", ease: "power1.inOut" },
   },
   debounceDelay: 300,
@@ -66,7 +71,7 @@ function Entry() {
 
     // Animate each word
     split.words.forEach((word, i) => {
-      const start = `top ${100 - i * 2}%`;
+      const start = `top ${80 - i * 2}%`;
       const end = `bottom ${Math.max(40 - i * 2, 0)}%`;
       const trigger = gsap.timeline({
         scrollTrigger: {

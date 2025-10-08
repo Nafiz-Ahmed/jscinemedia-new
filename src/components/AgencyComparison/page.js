@@ -1,12 +1,20 @@
+"use client";
+
 import Container from "@/layouts/Container";
 import React from "react";
 import AgencyComparison from "./AgencyComparison";
 import Title from "@/layouts/Title";
 import BackgroundGlow from "@/layouts/BackgroundGlow";
-import GlowingButton from "@/layouts/GlowingButton";
 import Button from "@/layouts/Button";
+import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
+import { useScroll } from "@/layouts/ScrollContext";
 
-function page() {
+function AgencyComparisonPage() {
+  const { isLoading } = useScroll();
+  const titleRef = useTextRevealAnimation({
+    isLoading: isLoading,
+  });
+
   return (
     <div
       style={{
@@ -15,9 +23,11 @@ function page() {
       }}
     >
       <BackgroundGlow width="90vw" left="-50%" top="40%" />
-      <Title>
-        Trusted by many, chosen for a <span>reason</span>.
-      </Title>
+      <div ref={titleRef}>
+        <Title>
+          Trusted by many, chosen for a <span>reason</span>.
+        </Title>
+      </div>
       <Container>
         <div
           style={{
@@ -29,9 +39,6 @@ function page() {
           }}
         >
           <AgencyComparison />
-          {/* <GlowingButton whatsApp style={{ padding: "15px 24px" }}>
-            Let&apos;s talk
-          </GlowingButton> */}
           <Button whatsApp>Book 15-min audit</Button>
         </div>
       </Container>
@@ -39,4 +46,4 @@ function page() {
   );
 }
 
-export default page;
+export default AgencyComparisonPage;
