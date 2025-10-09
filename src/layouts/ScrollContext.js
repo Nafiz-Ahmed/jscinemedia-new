@@ -231,7 +231,7 @@ export function ScrollProvider({ children }) {
       const instance = ScrollSmoother.create({
         wrapper: "#smooth-wrapper",
         content: "#smooth-content",
-        smooth: 1.2,
+        smooth: 1,
         smoothTouch: 0.1,
         effects: true,
         normalizeScroll: true,

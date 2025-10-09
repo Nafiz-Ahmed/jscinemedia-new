@@ -55,7 +55,6 @@ function Hero() {
     useScroll();
   const tl = useRef(null);
   const navigateToId = useNavigateToId();
-  const descriptionRef = useRef(null);
   const clientRef = useRef(null);
   const buttonRef = useRef(null);
   const heroTl = useRef(null);
@@ -71,6 +70,11 @@ function Hero() {
     ease: "power2.out",
     scrollTriggerStart: "top bottom-=100px",
     enabled: true,
+  });
+
+  const descriptionRef = useTextRevealAnimation({
+    isLoading: isLoading,
+    delay: 0.4,
   });
 
   const handleWatchDemo = () => {

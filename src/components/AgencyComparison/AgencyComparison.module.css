@@ -1,50 +1,49 @@
 /* AgencyComparison.module.css */
 .wrapper {
   display: flex;
-  gap: 2rem;
+  gap: 40px;
   align-items: center;
   justify-content: center;
   padding: 50px 0;
-  flex-wrap: wrap;
+  width: 100%;
+  max-width: var(--primary-content-width);
 }
 
 /* My Company Card */
 .myCompanyCard {
   background-color: var(--secondary-black);
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  padding: 35px;
   flex: 1;
   color: white;
   border: 1px solid var(--accent-color);
   width: 100%;
-  min-width: 300px;
-  max-width: 450px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 }
 
 .logo {
-  margin-bottom: 1.5rem;
   z-index: 2;
 }
 
 .features {
-  margin-bottom: 2rem;
   z-index: 2;
 }
 
 .feature {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 10px;
   padding: 0.5rem 0;
 }
 
 .featureText {
   color: #e5e7eb;
   line-height: 1.5;
-  font-size: 0.95rem;
+  font-size: calc(var(--normal-text) + 2px);
 }
 
 .bonusSection {
@@ -55,13 +54,15 @@
   z-index: 2;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .bonusTitle {
-  font-size: 1rem;
+  font-size: var(--semi-large-text);
   font-weight: 600;
   color: #c7d2fe;
-  margin-bottom: 1rem;
   margin-top: 0;
 }
 
@@ -83,28 +84,26 @@
 
 .bonusText {
   color: #e5e7eb;
-  font-size: 0.9rem;
+  font-size: calc(var(--normal-text) + 2px);
   font-weight: 500;
 }
 
 /* Other Agencies Card */
 .othersCard {
   background: var(--secondary-black);
-  border-radius: 16px;
-  padding: 1.5rem;
-  flex: 0.9;
+  border-radius: var(--border-radius);
+  padding: 30px;
+  flex: 0.85;
   border: 1px solid var(--border-color);
-  width: 90%;
-  min-width: 300px;
-  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .othersTitle {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--white);
-  margin-bottom: 1.5rem;
-  margin-top: 0;
 }
 
 .drawbacks {
@@ -123,5 +122,5 @@
 .drawbackText {
   color: #6b7280;
   line-height: 1.5;
-  font-size: 0.95rem;
+  font-size: calc(var(--normal-text) + 2px);
 }

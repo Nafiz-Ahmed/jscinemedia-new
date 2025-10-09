@@ -476,7 +476,7 @@ export default function NavBar() {
                     {activeId === id ? (
                       <GradientText
                         style={{
-                          fontSize: "var(--small-text)",
+                          fontSize: "var(--normal-text)",
                           fontWeight: "500",
                           fontFamily: "var(--font-satoshi)",
                         }}

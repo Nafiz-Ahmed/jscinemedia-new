@@ -9,7 +9,14 @@ function Card({ data, right }) {
       <BackgroundGlow minWidth="none" width="100%" left={right && "100%"} />
       <h1>{data.title}</h1>
       <p>{data.description}</p>
-      <Button shadow="subtle" whatsApp>
+      <Button
+        style={{
+          padding: "20px 30px",
+          fontWeight: "600",
+        }}
+        shadow="subtle"
+        whatsApp
+      >
         Explore Pricing →
       </Button>
     </div>

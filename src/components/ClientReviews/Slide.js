@@ -97,13 +97,12 @@ function Slide() {
             </div>
           ))}
         </div>
-      </div>
-
-      <div onClick={scrollPrev} className={styles.prevButton}>
-        <LeftArrow fill="var(--white)" />
-      </div>
-      <div onClick={scrollNext} className={styles.nextButton}>
-        <RightArrow fill="var(--white)" />
+        <div onClick={scrollPrev} className={styles.prevButton}>
+          <LeftArrow fill="var(--white)" />
+        </div>
+        <div onClick={scrollNext} className={styles.nextButton}>
+          <RightArrow fill="var(--white)" />
+        </div>
       </div>
     </div>
   );

@@ -35,7 +35,9 @@
   overflow: hidden;
   min-width: 260px;
   transition: all 0.5s ease;
-  max-height: 68px; /* collapsed */
+  max-height: 68px;
+  display: flex;
+  flex-direction: column;
 }
 
 .faqItem.open {
@@ -47,12 +49,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  line-height: 1.4;
 }
 
 .faqIcon {
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: flex-start;
   padding: 10px;
   border-radius: 50%;
   background-color: var(--secondary-bg-light);
@@ -90,6 +94,8 @@
   flex-direction: column;
   text-align: center;
   gap: 20px;
+  overflow: hidden;
+  position: relative;
 }
 
 .extra > h1 {

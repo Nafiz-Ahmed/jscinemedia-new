@@ -38,7 +38,7 @@
 .slideContent {
   width: 300px;
   aspect-ratio: 9/16;
-  border-radius: 10px;
+  border-radius: var(--border-radius);
   overflow: hidden;
   border: 1px solid var(--border-color);
   background-color: var(--light-gray);
@@ -51,13 +51,14 @@
 .prevButton {
   position: absolute;
   top: 50%;
+  transform: translateY(-50%);
   width: 70px;
   height: 70px;
   border-radius: 50%;
   background-color: var(--light-gray);
   opacity: 0.8;
   cursor: pointer;
-  z-index: 3;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;

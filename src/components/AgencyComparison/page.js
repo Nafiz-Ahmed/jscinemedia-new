@@ -22,7 +22,6 @@ function AgencyComparisonPage() {
         position: "relative",
       }}
     >
-      <BackgroundGlow width="90vw" left="-50%" top="40%" />
       <div ref={titleRef}>
         <Title>
           Trusted by many, chosen for a <span>reason</span>.
@@ -39,7 +38,15 @@ function AgencyComparisonPage() {
           }}
         >
           <AgencyComparison />
-          <Button whatsApp>Book 15-min audit</Button>
+          <Button
+            style={{
+              padding: "20px 30px",
+              fontWeight: "600",
+            }}
+            whatsApp
+          >
+            Book 15-min audit
+          </Button>
         </div>
       </Container>
     </div>

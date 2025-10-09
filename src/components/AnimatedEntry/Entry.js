@@ -8,15 +8,15 @@ import { useGSAP } from "@gsap/react";
 import { useScroll } from "@/layouts/ScrollContext";
 import styles from "./Entry.module.css";
 import Container from "@/layouts/Container";
+import Image from "next/image";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 const STATS_DATA = Object.freeze([
-  { value: "200%", name: "More Engagement", title: "Boost engagement" },
-  { value: "5x", name: "More Reach", title: "Expand reach" },
+  { icon: "/images/icon/boost.png", title: "Boost engagement" },
+  { icon: "/images/icon/reach.png", title: "Expand reach" },
   {
-    value: "50%",
-    name: "More Leads",
+    icon: "/images/icon/leads.png",
     title: "Convert more viewers into leads",
   },
 ]);
@@ -36,7 +36,9 @@ const ANIMATION_CONFIG = Object.freeze({
 
 const StatItem = React.memo(({ stat }) => (
   <div className={styles.statContent}>
-    <div className={styles.statValue}>{stat.value}</div>
+    <div className={styles.statIcon}>
+      <Image alt="icon" src={stat.icon} width={160} height={160} />
+    </div>
     <div className={styles.statTitle}>{stat.title}</div>
   </div>
 ));

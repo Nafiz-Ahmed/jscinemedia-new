@@ -16,7 +16,7 @@
 
 .tab {
   font-size: var(--small-text);
-  padding: 13px 10px;
+  padding: 19px 12px;
   border-radius: 7px;
   z-index: inherit;
   cursor: pointer;

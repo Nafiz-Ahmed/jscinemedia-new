@@ -49,7 +49,7 @@
 }
 
 .link {
-  font-size: var(--small-text);
+  font-size: var(--normal-text);
   padding: 13px 10px;
   border-radius: 7px;
   z-index: inherit;

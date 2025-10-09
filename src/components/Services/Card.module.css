@@ -10,7 +10,7 @@
   overflow: hidden;
   padding: clamp(20px, 0.5vw, 30px);
   width: 100%;
-  max-width: 400px;
+  aspect-ratio: 16/9;
 }
 
 .wrapper > h1 {
@@ -24,14 +24,13 @@
   text-align: center;
   line-height: 1.4;
   width: 100%;
-  max-width: 250px;
+  max-width: 70%;
 }
 
 .button {
   border: 1px solid var(--border-color);
   cursor: pointer;
   padding: 15px 20px;
-  /* border-radius: calc(infinity * 1px); */
   border-radius: 16px;
   font-size: calc(var(--small-text) + 2px);
   background-color: var(--accent-color-low);
