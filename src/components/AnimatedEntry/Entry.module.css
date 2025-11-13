@@ -90,3 +90,48 @@
     padding: 40px 0;
   }
 }
+
+.companiesSection {
+  width: 100%;
+  max-width: var(--primary-content-width);
+  padding-bottom: 80px;
+}
+
+.companiesTitle {
+  font-family: var(--font-satoshi);
+  font-size: var(--tertiary-title-text);
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.carouselContainer {
+  width: 100%;
+}
+
+.logoSlide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+}
+
+.logoSlide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 768px) {
+  .companiesSection {
+    padding: 40px 0;
+  }
+
+  .companiesTitle {
+    font-size: var(--semi-medium-text);
+    margin-bottom: 30px;
+  }
+
+  .logoSlide {
+    height: 60px;
+  }
+}

@@ -197,7 +197,7 @@ function Hero() {
               <Video
                 maxWidth={false}
                 playbackId={VSL_VIDEO}
-                thumbnailTime={10}
+                poster={"/images/VSL.jpg"}
               />
             </div>
           </div>

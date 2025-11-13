@@ -2,6 +2,36 @@
   padding: 60px 0;
 }
 
+.carouselWrapper {
+  overflow: hidden;
+  margin: 40px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.category {
+  width: fit-content;
+  padding: 20px 35px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  flex-shrink: 0;
+  font-size: var(--semi-large-text);
+}
+
+.categories .category {
+  /* fallback background if inline style isn't applied */
+  background-color: rgba(180, 212, 41, 0.1);
+}
+
 .wrapper {
   max-width: var(--primary-content-width);
   display: grid;

@@ -98,100 +98,100 @@ function Process() {
     return rotations[Math.floor(Math.random() * rotations.length)];
   };
 
-  const setupAnimation = () => {
-    const container = containerRef.current;
-    const cards = cardsRef.current.filter(Boolean);
-    const svgs = svgsRef.current.filter(Boolean);
-
-    if (!container || cards.length === 0) return;
-
-    // Kill existing animations
-    if (timelineRef.current) {
-      timelineRef.current.kill();
-    }
-    if (scrollTriggerRef.current) {
-      scrollTriggerRef.current.kill();
-    }
-
-    const breakpoint = getBreakpoint();
-    const targetStates = CARD_POSITIONS[breakpoint];
-
-    const containerRect = container.getBoundingClientRect();
-    const centerX = containerRect.width / 2;
-    const centerY = containerRect.height / 2;
-
-    // Set initial stacked (center) state
-    cards.forEach((card, index) => {
-      const cardRect = card.getBoundingClientRect();
-      const cardCenterX =
-        cardRect.left - containerRect.left + cardRect.width / 2;
-      const cardCenterY =
-        cardRect.top - containerRect.top + cardRect.height / 2;
-
-      const deltaX = centerX - cardCenterX;
-      const deltaY = centerY - cardCenterY;
-      const randomRotation = getRandomRotation();
-
-      gsap.set(card, {
-        x: deltaX,
-        y: deltaY,
-        rotation: randomRotation,
-        zIndex: cards.length - index,
-      });
-    });
-
-    // Hide SVGs
-    gsap.set(svgs, { opacity: 0 });
-    gsap.set(
-      svgs.map((svg) => svg.querySelector("path")),
-      { drawSVG: "0%" }
-    );
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        start: `top bottom-=${ANIMATION_CONFIG.triggerOffset}`,
-        once: false,
-        onEnter: () => setHasAnimated(true),
-      },
-    });
-
-    timelineRef.current = tl;
-
-    // Animate cards from stacked center → their predefined positions
-    tl.to(cards, {
-      x: (i) => targetStates[i].x,
-      y: (i) => targetStates[i].y,
-      rotation: (i) => targetStates[i].rotation,
-      duration: ANIMATION_CONFIG.cardDuration,
-      ease: ANIMATION_CONFIG.cardEase,
-      stagger: ANIMATION_CONFIG.cardStagger,
-      zIndex: 1,
-    });
-
-    // Animate SVGs after cards settle
-    if (ANIMATION_CONFIG.svgAnimationMode === "simultaneous") {
-      tl.to(
-        svgs,
-        { opacity: 1, duration: 0.3 },
-        `+=${ANIMATION_CONFIG.svgDelay}`
-      ).to(
-        svgs.map((svg) => svg.querySelector("path")),
-        {
-          drawSVG: "100%",
-          duration: ANIMATION_CONFIG.svgDuration,
-          ease: ANIMATION_CONFIG.svgEase,
-          stagger: 0.1,
-        },
-        "<"
-      );
-    }
-
-    // Store ScrollTrigger reference
-    scrollTriggerRef.current = ScrollTrigger.getById(tl.scrollTrigger.id);
-  };
-
   useEffect(() => {
+    const setupAnimation = () => {
+      const container = containerRef.current;
+      const cards = cardsRef.current.filter(Boolean);
+      const svgs = svgsRef.current.filter(Boolean);
+
+      if (!container || cards.length === 0) return;
+
+      // Kill existing animations
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill();
+      }
+
+      const breakpoint = getBreakpoint();
+      const targetStates = CARD_POSITIONS[breakpoint];
+
+      const containerRect = container.getBoundingClientRect();
+      const centerX = containerRect.width / 2;
+      const centerY = containerRect.height / 2;
+
+      // Set initial stacked (center) state
+      cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenterX =
+          cardRect.left - containerRect.left + cardRect.width / 2;
+        const cardCenterY =
+          cardRect.top - containerRect.top + cardRect.height / 2;
+
+        const deltaX = centerX - cardCenterX;
+        const deltaY = centerY - cardCenterY;
+        const randomRotation = getRandomRotation();
+
+        gsap.set(card, {
+          x: deltaX,
+          y: deltaY,
+          rotation: randomRotation,
+          zIndex: cards.length - index,
+        });
+      });
+
+      // Hide SVGs
+      gsap.set(svgs, { opacity: 0 });
+      gsap.set(
+        svgs.map((svg) => svg.querySelector("path")),
+        { drawSVG: "0%" }
+      );
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: `top bottom-=${ANIMATION_CONFIG.triggerOffset}`,
+          once: false,
+          onEnter: () => setHasAnimated(true),
+        },
+      });
+
+      timelineRef.current = tl;
+
+      // Animate cards from stacked center → their predefined positions
+      tl.to(cards, {
+        x: (i) => targetStates[i].x,
+        y: (i) => targetStates[i].y,
+        rotation: (i) => targetStates[i].rotation,
+        duration: ANIMATION_CONFIG.cardDuration,
+        ease: ANIMATION_CONFIG.cardEase,
+        stagger: ANIMATION_CONFIG.cardStagger,
+        zIndex: 1,
+      });
+
+      if (ANIMATION_CONFIG.svgAnimationMode === "simultaneous") {
+        const cardAnimationDuration =
+          ANIMATION_CONFIG.cardDuration +
+          ANIMATION_CONFIG.cardStagger * (cards.length - 1);
+        const svgStartTime = cardAnimationDuration * 0.4; // Start at 40% of card animation
+
+        tl.to(svgs, { opacity: 1, duration: 0.3 }, svgStartTime).to(
+          svgs.map((svg) => svg.querySelector("path")),
+          {
+            drawSVG: "100%",
+            duration: ANIMATION_CONFIG.svgDuration,
+            ease: ANIMATION_CONFIG.svgEase,
+            stagger: 0.1,
+          },
+          "<"
+        );
+      }
+
+      // Store ScrollTrigger reference
+      scrollTriggerRef.current = ScrollTrigger.getById(tl.scrollTrigger.id);
+    };
+
     setupAnimation();
 
     let resizeTimeout;
@@ -222,7 +222,7 @@ function Process() {
       <Container>
         <div ref={titleRef}>
           <Title>
-            How we make things <span>happen</span>.
+            How we make <span> things happen</span>.
           </Title>
         </div>
 

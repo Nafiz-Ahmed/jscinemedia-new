@@ -9,6 +9,7 @@ import { useScroll } from "@/layouts/ScrollContext";
 import styles from "./Entry.module.css";
 import Container from "@/layouts/Container";
 import Image from "next/image";
+import InfiniteScrollCarousel from "@/layouts/InfiniteScrollCarousel";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
@@ -19,6 +20,14 @@ const STATS_DATA = Object.freeze([
     icon: "/images/icon/leads.png",
     title: "Convert more viewers into leads",
   },
+]);
+
+const COMPANY_LOGOS = Object.freeze([
+  { src: "/images/company/logo1.png", alt: "Company 1" },
+  { src: "/images/company/logo2.png", alt: "Company 2" },
+  { src: "/images/company/logo3.png", alt: "Company 3" },
+  { src: "/images/company/logo4.png", alt: "Company 4" },
+  { src: "/images/company/logo5.png", alt: "Company 5" },
 ]);
 
 const ANIMATION_CONFIG = Object.freeze({
@@ -145,7 +154,25 @@ function Entry() {
     <section className={styles.entry}>
       <Container>
         <div className={styles.wrapper}>
-          {/* {!(isMobile || isTablet) && ( */}
+          <div id="overlay" className={styles.companiesSection}>
+            <div className={styles.companiesTitle}>
+              Trusted by businesses across the globe
+            </div>
+            <InfiniteScrollCarousel speed={0.7} gap={40}>
+              {COMPANY_LOGOS.map((logo, i) => (
+                <div key={i} className={styles.logoSlide}>
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    width={120}
+                    height={80}
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
+              ))}
+            </InfiniteScrollCarousel>
+          </div>
+
           <div className={styles.contents} style={{ position: "relative" }}>
             {formattedText}
           </div>

@@ -20,17 +20,17 @@ const LINKS = Object.freeze([
 const SOCIALS = Object.freeze([
   {
     name: "Instagram",
-    url: "https://www.instagram.com/js_cinemedia/",
+    url: "https://www.instagram.com/sazzadedits?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
     icon: Instagram,
   },
   {
     name: "LinkedIn",
-    url: "https://www.linkedin.com/company/js-cinemedia",
+    url: "https://www.linkedin.com/in/sazzadh2024/",
     icon: LinkedIn,
   },
   {
     name: "Facebook",
-    url: "https://www.facebook.com/profile.php?id=100087878583493",
+    url: "https://www.facebook.com/profile.php?id=61571576564872",
     icon: Facebook,
   },
 ]);
@@ -164,7 +164,7 @@ function Footer() {
 
             {/* Copyright */}
             <div className={styles.copyright}>
-              © 2025, J&S Cinemedia - All rights reserved.
+              © {new Date().getFullYear()}, J&S Cinemedia - All rights reserved.
             </div>
           </div>
         </Container>

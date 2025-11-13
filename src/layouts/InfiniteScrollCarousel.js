@@ -1,8 +1,8 @@
 "use client";
 import React, { useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import AutoScroll from "embla-carousel-auto-scroll";
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
+import AutoScroll from "embla-carousel-auto-scroll";
 
 const InfiniteScrollCarousel = ({
   children,
@@ -13,54 +13,59 @@ const InfiniteScrollCarousel = ({
   axis = "x",
   containerHeight,
   gap = 16,
+  dragAble = false,
+  wheelGesture = false,
   padding,
 }) => {
+  // Memoize options to prevent unnecessary re-renders
   const options = useMemo(
     () => ({
       axis,
       loop: true,
       align: "start",
       containScroll: false,
-      dragFree: true,
-      watchDrag: true,
+      dragFree: false,
+      watchDrag: dragAble,
       skipSnaps: false,
       inViewThreshold: 0,
     }),
-    [axis]
+    [axis, dragAble]
   );
 
+  // Memoize plugins to prevent recreation on each render
   const plugins = useMemo(
-    () => [
-      AutoScroll({
-        speed,
-        direction: direction === "forward" ? "forward" : "backward",
-        stopOnInteraction: false,
-        stopOnMouseEnter: pauseOnHover,
-        startDelay: 0,
-        playOnInit: true,
-      }),
-      WheelGesturesPlugin({
-        // ✅ Add wheel support
-        forceWheelAxis: axis, // lock to 'x' or 'y'
-        wheelDraggingClass: "is-wheel-dragging",
-      }),
-    ],
-    [speed, direction, pauseOnHover, axis]
+    () =>
+      [
+        AutoScroll({
+          speed,
+          direction: direction === "forward" ? "forward" : "backward",
+          stopOnInteraction: false,
+          stopOnMouseEnter: pauseOnHover,
+          startDelay: 0,
+          playOnInit: true,
+        }),
+        wheelGesture ? WheelGesturesPlugin() : null,
+      ].filter(Boolean),
+    [speed, direction, pauseOnHover, wheelGesture]
   );
 
   const [emblaRef] = useEmblaCarousel(options, plugins);
 
+  // Ultra-efficient duplication logic - memoized
   const duplicatedChildren = useMemo(() => {
     const childArray = React.Children.toArray(children);
     const count = childArray.length;
 
+    // No duplication needed if enough content
     if (count >= 6) return childArray;
+
     if (count === 1)
       return [...childArray, ...childArray, ...childArray, ...childArray];
     if (count === 2) return [...childArray, ...childArray, ...childArray];
-    return [...childArray, ...childArray];
+    return [...childArray, ...childArray]; // 3-5 items
   }, [children]);
 
+  // Memoize styles to prevent recalculation
   const emblaStyles = useMemo(
     () => ({
       overflow: "hidden",
@@ -84,6 +89,7 @@ const InfiniteScrollCarousel = ({
     [axis, containerHeight, gap, padding]
   );
 
+  // Simplified slide styles - no manual margin management needed for interior slides
   const slideStyles = useMemo(
     () => ({
       flex: "0 0 auto",

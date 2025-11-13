@@ -7,6 +7,7 @@ import styles from "./Services.module.css";
 import Card from "./Card";
 import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation";
 import { useScroll } from "@/layouts/ScrollContext";
+import InfiniteScrollCarousel from "@/layouts/InfiniteScrollCarousel";
 
 const OFFERINGS_ONE = [
   {
@@ -50,6 +51,30 @@ const OFFERINGS_TWO = [
   },
 ];
 
+const VIDEO_CATEGORIES = [
+  { id: 1, name: "Talking Head Videos" },
+  { id: 2, name: "Vlogs" },
+  { id: 3, name: "Podcast Videos" },
+  { id: 4, name: "Social Media Reels / TikToks" },
+  { id: 5, name: "Social Media ADs" },
+  { id: 6, name: "Commercial Videos" },
+  { id: 7, name: "LinkedIn Videos" },
+  { id: 8, name: "Travel Videos" },
+  { id: 9, name: "Real Estate Content" },
+  { id: 10, name: "Gaming Videos" },
+  { id: 11, name: "Courses" },
+  { id: 12, name: "Wedding Videos" },
+  { id: 13, name: "Event Highlights" },
+];
+
+// Tag background colors pattern: 1 -> 2 -> 3 -> 2 -> repeat
+const TAG_COLORS = [
+  "rgba(180, 212, 41, 0.5)",
+  "rgba(180, 212, 41, 0.2)",
+  "rgba(180, 212, 41, 0.1)",
+  "rgba(180, 212, 41, 0.2)",
+];
+
 function Services() {
   const { isLoading } = useScroll();
   const titleRef = useTextRevealAnimation({
@@ -61,9 +86,44 @@ function Services() {
       <Container>
         <div ref={titleRef}>
           <Title>
-            Explore what we <span>offer</span>.
+            <span>Explore</span> what we offer.
           </Title>
         </div>
+
+        <div className={styles.carouselWrapper}>
+          <div id="overlay" className={styles.categories}>
+            <InfiniteScrollCarousel axis="x" speed={0.4}>
+              {VIDEO_CATEGORIES.map((category, idx) => (
+                <div
+                  key={category.id}
+                  className={styles.category}
+                  style={{
+                    backgroundColor: TAG_COLORS[idx % TAG_COLORS.length],
+                  }}
+                >
+                  {category.name}
+                </div>
+              ))}
+            </InfiniteScrollCarousel>
+          </div>
+
+          <div id="overlay" className={styles.categories}>
+            <InfiniteScrollCarousel axis="x" speed={0.4} direction="reverse">
+              {VIDEO_CATEGORIES.map((category, idx) => (
+                <div
+                  key={category.id}
+                  className={styles.category}
+                  style={{
+                    backgroundColor: TAG_COLORS[idx % TAG_COLORS.length],
+                  }}
+                >
+                  {category.name}
+                </div>
+              ))}
+            </InfiniteScrollCarousel>
+          </div>
+        </div>
+
         <div className={styles.wrapper}>
           <div>
             {OFFERINGS_ONE.map((offer) => (

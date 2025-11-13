@@ -24,7 +24,7 @@ function AgencyComparisonPage() {
     >
       <div ref={titleRef}>
         <Title>
-          Trusted by many, chosen for a <span>reason</span>.
+          <span>Trusted </span> by many, <span>chosen</span> for a reason.
         </Title>
       </div>
       <Container>

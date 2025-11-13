@@ -89,6 +89,10 @@
   line-height: 1.4;
 }
 
+.description {
+  max-width: 400px;
+}
+
 .right {
   align-items: flex-end;
   text-align: right;
@@ -130,10 +134,11 @@
 
 @media screen and (max-width: 1023px) {
   .content {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 40px;
     align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: space-between;
     text-align: left;
     padding: 40px 0;
   }
@@ -147,6 +152,8 @@
 
   .center {
     order: 1;
+    width: 100vw !important;
+    max-width: none;
   }
 
   .left {

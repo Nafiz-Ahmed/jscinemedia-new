@@ -25,7 +25,7 @@ const PLANS = [
       yearly: "year",
     },
     description:
-      "For businesses ready to scale with professional video content",
+      "For Creators/Businesses ready to scale with professional video content",
     recommended: false,
     features: [
       "2 long-form videos",
@@ -46,7 +46,7 @@ const PLANS = [
       yearly: "year",
     },
     description:
-      "For businesses looking to outperform their competition with strategic video content",
+      "For Creators/Businesses looking to outperform their competition with strategic video content",
     recommended: true,
     features: [
       "4 long-form videos",
@@ -70,7 +70,7 @@ const PLANS = [
       yearly: "year",
     },
     description:
-      "For businesses looking to fully leverage video to become an industry leader",
+      "For Creators/Businesses looking to fully leverage video to become an industry leader",
     recommended: false,
     features: [
       "8 long-form videos",
@@ -119,7 +119,7 @@ const Subscriptions = () => {
       <div className={styles.wrapper}>
         <div ref={titleRef}>
           <Title>
-            Choose your perfect <span>plan</span>.
+            Choose your <span>perfect plan</span>.
           </Title>
         </div>
         <CustomTab elements={TABDATA} defaultSelected={1} />

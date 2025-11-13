@@ -71,6 +71,7 @@ const FAQ = () => {
   const renderFAQ = (data) =>
     data.map((faq, index) => (
       <div key={index} onClick={handleClick} className={styles.faqItem}>
+        <BackgroundGlow width="100%" minWidth="none" left="50%" top="50%" />
         <div className={styles.faqQuestion}>
           <div className={styles.questionText}>{faq.question}</div>
           <div className={`${styles.faqIcon}`}>

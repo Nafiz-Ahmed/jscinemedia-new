@@ -19,7 +19,7 @@ function Reviews() {
       <Container>
         <div ref={titleRef}>
           <Title>
-            The proof is in their <span>words</span>.
+            <span>The proof</span> is in their words.
           </Title>
         </div>
         <div className={styles.slider}>

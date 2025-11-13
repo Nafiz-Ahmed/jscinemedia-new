@@ -4,6 +4,9 @@
   overflow: hidden;
   position: relative;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .skeleton {
@@ -25,6 +28,7 @@
     background-position: -200% 0;
   }
 }
+
 /* Fade in video smoothly */
 .muxVideoContainer video {
   opacity: 0;
@@ -33,4 +37,11 @@
 
 .muxVideoContainer.loaded video {
   opacity: 1;
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

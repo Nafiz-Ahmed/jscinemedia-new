@@ -218,7 +218,7 @@ function Work() {
       <Container>
         <div ref={titleRef}>
           <Title>
-            See the impact of <span>our work</span>.
+            See <span> the impact </span> of our work.
           </Title>
         </div>
         <div className={styles.projects}>
