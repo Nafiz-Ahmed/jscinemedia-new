@@ -29,16 +29,39 @@
   border: 1px solid var(--accent-color);
 }
 
+/* FIXED: Dynamic video container that adapts to aspect ratio */
 .slideContent {
-  width: 300px;
-  aspect-ratio: 9/16;
+  height: auto; /* Let aspect-ratio control height */
   border-radius: var(--border-radius);
   overflow: hidden;
   border: 1px solid var(--border-color);
   background-color: var(--light-gray);
-  display: flex;
-  align-items: center;
-  justify-self: center;
+  display: block;
+  position: relative;
+  flex-shrink: 0; /* Prevent shrinking */
+  transition: width 0.3s ease; /* Smooth transition when aspect ratio changes */
+}
+
+/* Default portrait sizing */
+.slideContent[data-aspect="9/16"] {
+  width: 300px;
+}
+
+/* Landscape sizing - maintains same height as portrait */
+.slideContent[data-aspect="16/9"] {
+  width: 533px; /* 300px × (16/9) / (9/16) = 533px */
+}
+
+/* Square sizing */
+.slideContent[data-aspect="1/1"] {
+  width: 300px;
+}
+
+/* Remove any potential spacing issues */
+.slideContent > * {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .clientsData {
@@ -73,6 +96,12 @@
   overflow: hidden;
   width: 50px;
   height: 50px;
+  flex-shrink: 0;
+}
+
+.clientPhoto img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -92,23 +121,12 @@
 .clientRole {
   font-size: var(--small-text);
   color: var(--white-text);
-  font-family: var(--font-syne);
   opacity: 0.6;
 }
 
 @media screen and (max-width: 768px) {
-  .nextButton,
-  .prevButton {
-    width: 50px;
-    height: 50px;
-    /* top: calc(95%); */
+  .slideContent {
+    width: 250px;
+    aspect-ratio: 9/16;
   }
-
-  /* .nextButton {
-    left: 60%;
-  }
-
-  .prevButton {
-    left: 30%;
-  } */
 }

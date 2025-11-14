@@ -15,56 +15,74 @@ const Video = ({
   className = "",
   setVisible,
   onVideoLoad,
-  maxWidth = true,
-  aspectRatioSet,
+  fillContainer = false,
+  onAspectRatioDetected, // NEW: Callback to inform parent of aspect ratio
 }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [detectedAspectRatio, setDetectedAspectRatio] = useState(null);
   const { refresh } = useScroll();
   const hasCalledLoad = useRef(false);
   const playerRef = useRef(null);
   const retryCount = useRef(0);
   const MAX_RETRIES = 3;
 
-  // Generate thumbnail URL with proper Mux image format
-  const generatedPosterUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg?time=${thumbnailTime}&width=1280`;
+  // Generate high-resolution Mux thumbnail URL as fallback
+  // Using 1920px width ensures good quality for both orientations
+  const generatedPosterUrl = playbackId
+    ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=${thumbnailTime}&width=1920&fit_mode=smartcrop`
+    : null;
+
+  // Use provided poster or fallback to Mux thumbnail
   const posterUrl = poster || generatedPosterUrl;
 
-  // Helper function to determine aspect ratio
-  const calculateAspectRatio = useCallback((width, height) => {
-    if (!width || !height) return "16/9";
-
-    const ratio = width / height;
-    if (ratio >= 1.5) return "16/9";
-    if (ratio <= 0.67) return "9/16";
-    return "1/1";
-  }, []);
-
-  // Load poster and determine aspect ratio
+  // Detect aspect ratio from Mux thumbnail
   useEffect(() => {
-    if (!posterUrl || !playbackId) return;
-
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-
-    const loadTimeout = setTimeout(() => {
-      // Fallback after 5 seconds
-      console.warn("Poster image load timeout, using fallback aspect ratio");
-      setAspectRatio("16/9");
+    if (!playbackId || !generatedPosterUrl || poster) {
+      // If custom poster is provided, skip detection
       setIsReady(true);
       if (onVideoLoad && !hasCalledLoad.current) {
         hasCalledLoad.current = true;
         onVideoLoad();
       }
-    }, 5000);
+      return;
+    }
+
+    let isCancelled = false;
+    const img = new Image();
+
+    // Don't use crossOrigin for Mux images to avoid CORS issues
+    const loadTimeout = setTimeout(() => {
+      if (isCancelled) return;
+      console.warn("Thumbnail load timeout, assuming 9:16");
+      setDetectedAspectRatio("9/16");
+      if (onAspectRatioDetected) onAspectRatioDetected("9/16");
+      setIsReady(true);
+      if (onVideoLoad && !hasCalledLoad.current) {
+        hasCalledLoad.current = true;
+        onVideoLoad();
+      }
+    }, 3000);
 
     img.onload = () => {
+      if (isCancelled) return;
       clearTimeout(loadTimeout);
-      const ratio = calculateAspectRatio(img.width, img.height);
-      setAspectRatio(ratio);
+
+      const ratio = img.width / img.height;
+      let aspectRatio = "9/16"; // Default
+
+      if (ratio >= 1.5) {
+        aspectRatio = "16/9"; // Landscape
+      } else if (ratio <= 0.67) {
+        aspectRatio = "9/16"; // Portrait
+      } else {
+        aspectRatio = "1/1"; // Square
+      }
+
+      setDetectedAspectRatio(aspectRatio);
+      if (onAspectRatioDetected) onAspectRatioDetected(aspectRatio);
       setIsReady(true);
 
       if (onVideoLoad && !hasCalledLoad.current) {
@@ -74,9 +92,11 @@ const Video = ({
     };
 
     img.onerror = () => {
+      if (isCancelled) return;
       clearTimeout(loadTimeout);
-      console.warn("Failed to load poster image, using fallback");
-      setAspectRatio("16/9");
+      console.warn("Failed to load thumbnail, assuming 9:16");
+      setDetectedAspectRatio("9/16");
+      if (onAspectRatioDetected) onAspectRatioDetected("9/16");
       setIsReady(true);
       if (onVideoLoad && !hasCalledLoad.current) {
         hasCalledLoad.current = true;
@@ -84,57 +104,78 @@ const Video = ({
       }
     };
 
-    img.src = posterUrl;
+    img.src = generatedPosterUrl;
 
-    return () => clearTimeout(loadTimeout);
-  }, [playbackId, posterUrl, calculateAspectRatio, onVideoLoad]);
+    return () => {
+      isCancelled = true;
+      clearTimeout(loadTimeout);
+    };
+  }, [
+    playbackId,
+    generatedPosterUrl,
+    poster,
+    onVideoLoad,
+    onAspectRatioDetected,
+  ]);
 
   // Handle metadata loaded
   const handleLoadedMetadata = useCallback(
     (event) => {
       try {
         const video = event.target;
+
+        // Double-check aspect ratio from actual video metadata
         if (video?.videoWidth && video?.videoHeight) {
-          const ratio = calculateAspectRatio(
-            video.videoWidth,
-            video.videoHeight
-          );
-          setAspectRatio(ratio);
+          const ratio = video.videoWidth / video.videoHeight;
+          let aspectRatio = "9/16";
+
+          if (ratio >= 1.5) {
+            aspectRatio = "16/9";
+          } else if (ratio <= 0.67) {
+            aspectRatio = "9/16";
+          } else {
+            aspectRatio = "1/1";
+          }
+
+          if (aspectRatio !== detectedAspectRatio) {
+            setDetectedAspectRatio(aspectRatio);
+            if (onAspectRatioDetected) onAspectRatioDetected(aspectRatio);
+          }
         }
+
         setVideoLoaded(true);
         setHasError(false);
         setErrorMessage("");
         retryCount.current = 0;
 
         if (setVisible) setVisible(true);
-        refresh();
+        if (refresh) refresh();
       } catch (err) {
         console.error("Error in handleLoadedMetadata:", err);
       }
     },
-    [calculateAspectRatio, setVisible, refresh]
+    [setVisible, refresh, detectedAspectRatio, onAspectRatioDetected]
   );
 
   // Handle player errors with retry logic
   const handleError = useCallback((event) => {
     const errorCode = event?.detail?.errorCode;
-    const errorMessage = event?.detail?.errorMessage || "Unknown error";
+    const errorMsg = event?.detail?.errorMessage || "Unknown error";
 
     console.error("Mux Player Error:", {
       code: errorCode,
-      message: errorMessage,
+      message: errorMsg,
       event,
     });
 
-    // Map Mux error codes to user-friendly messages
     let userMessage = "Error playing video. ";
 
     if (errorCode === 4) {
       userMessage += "Network error. Please check your connection.";
-    } else if (errorMessage.includes("DECODE")) {
+    } else if (errorMsg.includes("DECODE")) {
       userMessage +=
-        "Video format not supported on this browser. Please try a different browser.";
-    } else if (errorMessage.includes("NETWORK")) {
+        "Video format not supported. Please try a different browser.";
+    } else if (errorMsg.includes("NETWORK")) {
       userMessage += "Network error. Please try again.";
     } else {
       userMessage += "Please try again later.";
@@ -143,8 +184,8 @@ const Video = ({
     setErrorMessage(userMessage);
     setHasError(true);
 
-    // Attempt retry for certain errors
-    if (retryCount.current < MAX_RETRIES && errorMessage.includes("NETWORK")) {
+    // Retry for network errors
+    if (retryCount.current < MAX_RETRIES && errorMsg.includes("NETWORK")) {
       retryCount.current += 1;
       console.log(
         `Retrying playback (${retryCount.current}/${MAX_RETRIES})...`
@@ -162,21 +203,24 @@ const Video = ({
     }
   }, []);
 
-  // Handle player play event
   const handlePlay = useCallback(() => {
     setHasError(false);
     setErrorMessage("");
   }, []);
 
-  // Handle player stalled event (buffering)
   const handleStalled = useCallback(() => {
-    console.log("Video stalled, buffering...");
+    console.log("Video buffering...");
   }, []);
 
-  // Handle seeking
-  const handleSeeking = useCallback(() => {
-    // Can implement custom logic here if needed
-  }, []);
+  // Container styles
+  const containerStyles = fillContainer
+    ? {
+        width: "100%",
+        height: "100%",
+      }
+    : {
+        width: "100%",
+      };
 
   // Render error state
   if (hasError && !videoLoaded) {
@@ -184,20 +228,15 @@ const Video = ({
       <div
         className={`${styles.muxVideoContainer} ${styles.error} ${className}`}
         style={{
+          ...containerStyles,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          width: "100%",
-          aspectRatio: aspectRatioSet === 2 ? "16/9" : "9/16",
-          position: "relative",
-          overflow: "hidden",
           backgroundColor: "#1a1a1a",
           padding: "20px",
           textAlign: "center",
-          ...(maxWidth && {
-            maxWidth: aspectRatioSet === 2 ? "550px" : "280px",
-          }),
+          minHeight: "200px",
         }}
       >
         <div style={{ color: "white", fontSize: "14px" }}>
@@ -229,22 +268,16 @@ const Video = ({
   }
 
   // Render loading state
-  if (!isReady || !aspectRatio) {
+  if (!isReady) {
     return (
       <div
         className={`${styles.muxVideoContainer} ${styles.skeleton} ${className}`}
         style={{
+          ...containerStyles,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          width: "100%",
-          minHeight: "200px",
-          aspectRatio: aspectRatioSet === 2 ? "16/9" : "9/16",
-          position: "relative",
-          overflow: "hidden",
-          ...(maxWidth && {
-            maxWidth: aspectRatioSet === 2 ? "550px" : "280px",
-          }),
+          minHeight: fillContainer ? "100%" : "200px",
         }}
       >
         <TailChase color="var(--accent-color)" size={40} />
@@ -258,12 +291,8 @@ const Video = ({
       className={`${styles.muxVideoContainer} ${
         videoLoaded ? styles.loaded : ""
       } ${className}`}
-      style={{
-        aspectRatio: aspectRatio,
-        ...(maxWidth && {
-          maxWidth: aspectRatio === "9/16" ? "280px" : "550px",
-        }),
-      }}
+      style={containerStyles}
+      data-aspect-ratio={detectedAspectRatio}
     >
       <MuxPlayer
         ref={playerRef}
@@ -278,14 +307,12 @@ const Video = ({
         onError={handleError}
         onPlay={handlePlay}
         onStalled={handleStalled}
-        onSeeking={handleSeeking}
         primaryColor="var(--accent-color)"
         accentColor="white"
         secondaryColor="transparent"
         preload="metadata"
         muted={autoPlay}
         playsInline={true}
-        crossOrigin="anonymous"
         disablePictureInPicture={false}
         preferPlayback="mse"
         metadata={{
@@ -293,12 +320,10 @@ const Video = ({
           video_title: "Video",
         }}
         style={{
-          width: "101%",
-          height: "101%",
-          backgroundColor: "transparent",
+          width: "100%",
+          height: "100%",
           display: "block",
-          margin: "0",
-          padding: "0",
+          backgroundColor: "transparent",
         }}
       />
     </div>
