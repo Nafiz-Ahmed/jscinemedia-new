@@ -9,7 +9,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 100px 0;
+  padding-bottom: 60px;
 }
 
 .text,
@@ -55,6 +55,7 @@
 }
 
 .statContent {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -71,7 +72,6 @@
 .statTitle {
   font-family: var(--font-satoshi);
   font-size: var(--semi-large-text);
-  opacity: 0.5;
   margin-top: 10px;
   max-width: 300px;
   text-align: center;
@@ -93,8 +93,11 @@
 
 .companiesSection {
   width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0;
   max-width: var(--primary-content-width);
-  padding-bottom: 80px;
+  margin: 0 auto;
 }
 
 .companiesTitle {
@@ -104,34 +107,36 @@
   margin-bottom: 50px;
 }
 
-.carouselContainer {
-  width: 100%;
-}
-
 .logoSlide {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 80px;
+  /* Make each slide a fixed width so spacing is consistent */
+  width: 150px;
+  flex: 0 0 150px;
 }
 
 .logoSlide img {
-  max-width: 100%;
+  /* Ensure logos keep their aspect ratio and fit inside the fixed slide */
+  width: auto;
+  max-width: 120px;
   max-height: 100%;
   object-fit: contain;
 }
 
 @media screen and (max-width: 768px) {
   .companiesSection {
-    padding: 40px 0;
+    padding: 70px 0;
   }
 
   .companiesTitle {
-    font-size: var(--semi-medium-text);
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
 
   .logoSlide {
     height: 60px;
+    width: 120px;
+    flex: 0 0 120px;
   }
 }

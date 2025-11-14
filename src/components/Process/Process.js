@@ -174,7 +174,7 @@ function Process() {
         const cardAnimationDuration =
           ANIMATION_CONFIG.cardDuration +
           ANIMATION_CONFIG.cardStagger * (cards.length - 1);
-        const svgStartTime = cardAnimationDuration * 0.4; // Start at 40% of card animation
+        const svgStartTime = cardAnimationDuration * 0.1;
 
         tl.to(svgs, { opacity: 1, duration: 0.3 }, svgStartTime).to(
           svgs.map((svg) => svg.querySelector("path")),

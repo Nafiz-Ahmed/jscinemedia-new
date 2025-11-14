@@ -10,15 +10,18 @@ import styles from "./Entry.module.css";
 import Container from "@/layouts/Container";
 import Image from "next/image";
 import InfiniteScrollCarousel from "@/layouts/InfiniteScrollCarousel";
+import { IconOne, IconTwo, IconThree } from "./Icon";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 const STATS_DATA = Object.freeze([
-  { icon: "/images/icon/boost.png", title: "Boost engagement" },
-  { icon: "/images/icon/reach.png", title: "Expand reach" },
+  { icon: IconOne, title: "Boost engagement", width: 110, height: 110 },
+  { icon: IconTwo, title: "Expand reach", width: 110, height: 110 },
   {
-    icon: "/images/icon/leads.png",
+    icon: IconThree,
     title: "Convert more viewers into leads",
+    width: 130,
+    height: 110,
   },
 ]);
 
@@ -43,14 +46,18 @@ const ANIMATION_CONFIG = Object.freeze({
   debounceDelay: 300,
 });
 
-const StatItem = React.memo(({ stat }) => (
-  <div className={styles.statContent}>
-    <div className={styles.statIcon}>
-      <Image alt="icon" src={stat.icon} width={160} height={160} />
+const StatItem = React.memo(({ stat }) => {
+  const IconComponent = stat.icon;
+  const { width = 80, height = 80 } = stat;
+  return (
+    <div className={styles.statContent}>
+      <div className={styles.statIcon}>
+        {IconComponent ? <IconComponent width={width} height={height} /> : null}
+      </div>
+      <div className={styles.statTitle}>{stat.title}</div>
     </div>
-    <div className={styles.statTitle}>{stat.title}</div>
-  </div>
-));
+  );
+});
 StatItem.displayName = "StatItem";
 
 function Entry() {
@@ -152,27 +159,28 @@ function Entry() {
 
   return (
     <section className={styles.entry}>
+      <div className={styles.companiesSection}>
+        <div className={styles.companiesTitle}>
+          Trusted by businesses across the globe
+        </div>
+        <div id="overlay">
+          <InfiniteScrollCarousel speed={0.7} gap={40}>
+            {COMPANY_LOGOS.map((logo, i) => (
+              <div key={i} className={styles.logoSlide}>
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={120}
+                  height={80}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            ))}
+          </InfiniteScrollCarousel>
+        </div>
+      </div>
       <Container>
         <div className={styles.wrapper}>
-          <div id="overlay" className={styles.companiesSection}>
-            <div className={styles.companiesTitle}>
-              Trusted by businesses across the globe
-            </div>
-            <InfiniteScrollCarousel speed={0.7} gap={40}>
-              {COMPANY_LOGOS.map((logo, i) => (
-                <div key={i} className={styles.logoSlide}>
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={120}
-                    height={80}
-                    style={{ objectFit: "contain" }}
-                  />
-                </div>
-              ))}
-            </InfiniteScrollCarousel>
-          </div>
-
           <div className={styles.contents} style={{ position: "relative" }}>
             {formattedText}
           </div>

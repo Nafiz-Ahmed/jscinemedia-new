@@ -59,4 +59,8 @@
   .wrapper > div {
     margin: 0 auto;
   }
+
+  .category {
+    padding: 15px 25px;
+  }
 }
