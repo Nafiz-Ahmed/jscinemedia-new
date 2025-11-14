@@ -126,7 +126,7 @@
 
 @media screen and (max-width: 768px) {
   .slideContent {
-    width: 250px;
+    width: 300px;
     aspect-ratio: 9/16;
   }
 }

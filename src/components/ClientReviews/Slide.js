@@ -59,12 +59,17 @@ const CLIENT_DATA = [
 
 function Slide() {
   const [aspectRatios, setAspectRatios] = useState({});
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const handleAspectRatioDetected = (clientId, aspectRatio) => {
     setAspectRatios((prev) => ({
       ...prev,
       [clientId]: aspectRatio,
     }));
+  };
+
+  const handleVideoPlayStatusChange = (isPlaying) => {
+    setIsVideoPlaying(isPlaying);
   };
 
   return (
@@ -77,6 +82,7 @@ function Slide() {
           pauseOnHover={true}
           dragAble={true}
           wheelGesture={true}
+          pauseOnVideoPlay={isVideoPlaying}
         >
           {CLIENT_DATA.map((client) => {
             const aspectRatio = aspectRatios[client.id] || "9/16"; // Default to portrait
@@ -100,6 +106,7 @@ function Slide() {
                     onAspectRatioDetected={(ratio) =>
                       handleAspectRatioDetected(client.id, ratio)
                     }
+                    onPlayStatusChange={handleVideoPlayStatusChange}
                     aria-label={`Testimonial video from ${client.name}, ${client.role}`}
                   />
                 </div>

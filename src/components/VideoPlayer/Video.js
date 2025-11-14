@@ -17,6 +17,7 @@ const Video = ({
   onVideoLoad,
   fillContainer = false,
   onAspectRatioDetected, // NEW: Callback to inform parent of aspect ratio
+  onPlayStatusChange, // NEW: Callback to inform parent of play/pause status
 }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -206,11 +207,20 @@ const Video = ({
   const handlePlay = useCallback(() => {
     setHasError(false);
     setErrorMessage("");
-  }, []);
+    if (onPlayStatusChange) onPlayStatusChange(true);
+  }, [onPlayStatusChange]);
 
   const handleStalled = useCallback(() => {
     console.log("Video buffering...");
   }, []);
+
+  const handlePause = useCallback(() => {
+    if (onPlayStatusChange) onPlayStatusChange(false);
+  }, [onPlayStatusChange]);
+
+  const handleEnded = useCallback(() => {
+    if (onPlayStatusChange) onPlayStatusChange(false);
+  }, [onPlayStatusChange]);
 
   // Container styles
   const containerStyles = fillContainer
@@ -306,6 +316,8 @@ const Video = ({
         onLoadedMetadata={handleLoadedMetadata}
         onError={handleError}
         onPlay={handlePlay}
+        onPause={handlePause}
+        onEnded={handleEnded}
         onStalled={handleStalled}
         primaryColor="var(--accent-color)"
         accentColor="white"

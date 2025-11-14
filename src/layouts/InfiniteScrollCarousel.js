@@ -16,6 +16,7 @@ const InfiniteScrollCarousel = ({
   dragAble = false,
   wheelGesture = false,
   padding,
+  pauseOnVideoPlay = false,
 }) => {
   // Memoize options to prevent unnecessary re-renders
   const options = useMemo(
@@ -40,13 +41,13 @@ const InfiniteScrollCarousel = ({
           speed,
           direction: direction === "forward" ? "forward" : "backward",
           stopOnInteraction: false,
-          stopOnMouseEnter: pauseOnHover,
+          stopOnMouseEnter: pauseOnHover || pauseOnVideoPlay,
           startDelay: 0,
           playOnInit: true,
         }),
         wheelGesture ? WheelGesturesPlugin() : null,
       ].filter(Boolean),
-    [speed, direction, pauseOnHover, wheelGesture]
+    [speed, direction, pauseOnHover, wheelGesture, pauseOnVideoPlay]
   );
 
   const [emblaRef] = useEmblaCarousel(options, plugins);
