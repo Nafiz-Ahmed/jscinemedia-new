@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
 import AutoScroll from "embla-carousel-auto-scroll";
@@ -16,7 +16,6 @@ const InfiniteScrollCarousel = ({
   dragAble = false,
   wheelGesture = false,
   padding,
-  pauseOnVideoPlay = false,
 }) => {
   // Memoize options to prevent unnecessary re-renders
   const options = useMemo(
@@ -41,16 +40,16 @@ const InfiniteScrollCarousel = ({
           speed,
           direction: direction === "forward" ? "forward" : "backward",
           stopOnInteraction: false,
-          stopOnMouseEnter: pauseOnHover || pauseOnVideoPlay,
+          stopOnMouseEnter: pauseOnHover,
           startDelay: 0,
           playOnInit: true,
         }),
         wheelGesture ? WheelGesturesPlugin() : null,
       ].filter(Boolean),
-    [speed, direction, pauseOnHover, wheelGesture, pauseOnVideoPlay]
+    [speed, direction, pauseOnHover, wheelGesture]
   );
 
-  const [emblaRef] = useEmblaCarousel(options, plugins);
+  const [emblaRef, emblaApi] = useEmblaCarousel(options, plugins);
 
   // Ultra-efficient duplication logic - memoized
   const duplicatedChildren = useMemo(() => {

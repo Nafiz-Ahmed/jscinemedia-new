@@ -1,345 +1,182 @@
 "use client";
+
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useScroll } from "@/layouts/ScrollContext";
 import MuxPlayer from "@mux/mux-player-react";
-import { TailChase } from "ldrs/react";
 import styles from "./Video.module.css";
 
-const Video = ({
+export default function Video({
   playbackId,
   autoPlay = false,
   loop = false,
   controls = true,
+  muted = false,
   thumbnailTime = 0,
-  poster = null,
-  className = "",
-  setVisible,
-  onVideoLoad,
-  fillContainer = false,
-  onAspectRatioDetected, // NEW: Callback to inform parent of aspect ratio
-  onPlayStatusChange, // NEW: Callback to inform parent of play/pause status
-}) => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  poster,
+  aspectRatio = "16:9",
+  preload = "metadata",
+  playButtonColor = "red",
+  progressBarColor = "#ff0000",
+  loadingSpinnerColor = "#ffffff",
+  onError,
+  onLoadStart,
+  onCanPlay,
+  ...rest
+}) {
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [detectedAspectRatio, setDetectedAspectRatio] = useState(null);
-  const { refresh } = useScroll();
-  const hasCalledLoad = useRef(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [posterUrl, setPosterUrl] = useState(null);
   const playerRef = useRef(null);
-  const retryCount = useRef(0);
-  const MAX_RETRIES = 3;
+  const maxRetries = 3;
 
-  // Generate high-resolution Mux thumbnail URL as fallback
-  // Using 1920px width ensures good quality for both orientations
-  const generatedPosterUrl = playbackId
-    ? `https://image.mux.com/${playbackId}/thumbnail.jpg?time=${thumbnailTime}&width=1920&fit_mode=smartcrop`
-    : null;
+  // Calculate aspect ratio value
+  const getAspectRatioValue = useCallback(() => {
+    if (!aspectRatio) return "16/9";
+    return aspectRatio.replace(":", "/");
+  }, [aspectRatio]);
 
-  // Use provided poster or fallback to Mux thumbnail
-  const posterUrl = poster || generatedPosterUrl;
+  // Calculate thumbnail width based on aspect ratio
+  const getThumbnailWidth = useCallback(() => {
+    if (aspectRatio === "9:16") return 1200;
+    return 1920;
+  }, [aspectRatio]);
 
-  // Detect aspect ratio from Mux thumbnail
+  // Generate thumbnail URL or use custom poster
   useEffect(() => {
-    if (!playbackId || !generatedPosterUrl || poster) {
-      // If custom poster is provided, skip detection
-      setIsReady(true);
-      if (onVideoLoad && !hasCalledLoad.current) {
-        hasCalledLoad.current = true;
-        onVideoLoad();
-      }
-      return;
+    if (poster) {
+      setPosterUrl(poster);
+      setIsLoading(false);
+    } else if (playbackId) {
+      const width = getThumbnailWidth();
+      const thumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg?time=${thumbnailTime}&width=${width}`;
+
+      // Preload the thumbnail
+      const img = new Image();
+      img.onload = () => {
+        setPosterUrl(thumbnailUrl);
+        setIsLoading(false);
+      };
+      img.onerror = () => {
+        console.error("Failed to load thumbnail");
+        setIsLoading(false);
+        setHasError(true);
+      };
+      img.src = thumbnailUrl;
     }
-
-    let isCancelled = false;
-    const img = new Image();
-
-    // Don't use crossOrigin for Mux images to avoid CORS issues
-    const loadTimeout = setTimeout(() => {
-      if (isCancelled) return;
-      console.warn("Thumbnail load timeout, assuming 9:16");
-      setDetectedAspectRatio("9/16");
-      if (onAspectRatioDetected) onAspectRatioDetected("9/16");
-      setIsReady(true);
-      if (onVideoLoad && !hasCalledLoad.current) {
-        hasCalledLoad.current = true;
-        onVideoLoad();
-      }
-    }, 3000);
-
-    img.onload = () => {
-      if (isCancelled) return;
-      clearTimeout(loadTimeout);
-
-      const ratio = img.width / img.height;
-      let aspectRatio = "9/16"; // Default
-
-      if (ratio >= 1.5) {
-        aspectRatio = "16/9"; // Landscape
-      } else if (ratio <= 0.67) {
-        aspectRatio = "9/16"; // Portrait
-      } else {
-        aspectRatio = "1/1"; // Square
-      }
-
-      setDetectedAspectRatio(aspectRatio);
-      if (onAspectRatioDetected) onAspectRatioDetected(aspectRatio);
-      setIsReady(true);
-
-      if (onVideoLoad && !hasCalledLoad.current) {
-        hasCalledLoad.current = true;
-        onVideoLoad();
-      }
-    };
-
-    img.onerror = () => {
-      if (isCancelled) return;
-      clearTimeout(loadTimeout);
-      console.warn("Failed to load thumbnail, assuming 9:16");
-      setDetectedAspectRatio("9/16");
-      if (onAspectRatioDetected) onAspectRatioDetected("9/16");
-      setIsReady(true);
-      if (onVideoLoad && !hasCalledLoad.current) {
-        hasCalledLoad.current = true;
-        onVideoLoad();
-      }
-    };
-
-    img.src = generatedPosterUrl;
-
-    return () => {
-      isCancelled = true;
-      clearTimeout(loadTimeout);
-    };
-  }, [
-    playbackId,
-    generatedPosterUrl,
-    poster,
-    onVideoLoad,
-    onAspectRatioDetected,
-  ]);
-
-  // Handle metadata loaded
-  const handleLoadedMetadata = useCallback(
-    (event) => {
-      try {
-        const video = event.target;
-
-        // Double-check aspect ratio from actual video metadata
-        if (video?.videoWidth && video?.videoHeight) {
-          const ratio = video.videoWidth / video.videoHeight;
-          let aspectRatio = "9/16";
-
-          if (ratio >= 1.5) {
-            aspectRatio = "16/9";
-          } else if (ratio <= 0.67) {
-            aspectRatio = "9/16";
-          } else {
-            aspectRatio = "1/1";
-          }
-
-          if (aspectRatio !== detectedAspectRatio) {
-            setDetectedAspectRatio(aspectRatio);
-            if (onAspectRatioDetected) onAspectRatioDetected(aspectRatio);
-          }
-        }
-
-        setVideoLoaded(true);
-        setHasError(false);
-        setErrorMessage("");
-        retryCount.current = 0;
-
-        if (setVisible) setVisible(true);
-        if (refresh) refresh();
-      } catch (err) {
-        console.error("Error in handleLoadedMetadata:", err);
-      }
-    },
-    [setVisible, refresh, detectedAspectRatio, onAspectRatioDetected]
-  );
+  }, [playbackId, thumbnailTime, poster, getThumbnailWidth]);
 
   // Handle player errors with retry logic
-  const handleError = useCallback((event) => {
-    const errorCode = event?.detail?.errorCode;
-    const errorMsg = event?.detail?.errorMessage || "Unknown error";
+  const handleError = useCallback(
+    (error) => {
+      console.error("Mux Player Error:", error);
+      setHasError(true);
 
-    console.error("Mux Player Error:", {
-      code: errorCode,
-      message: errorMsg,
-      event,
-    });
-
-    let userMessage = "Error playing video. ";
-
-    if (errorCode === 4) {
-      userMessage += "Network error. Please check your connection.";
-    } else if (errorMsg.includes("DECODE")) {
-      userMessage +=
-        "Video format not supported. Please try a different browser.";
-    } else if (errorMsg.includes("NETWORK")) {
-      userMessage += "Network error. Please try again.";
-    } else {
-      userMessage += "Please try again later.";
-    }
-
-    setErrorMessage(userMessage);
-    setHasError(true);
-
-    // Retry for network errors
-    if (retryCount.current < MAX_RETRIES && errorMsg.includes("NETWORK")) {
-      retryCount.current += 1;
-      console.log(
-        `Retrying playback (${retryCount.current}/${MAX_RETRIES})...`
-      );
-
-      setTimeout(() => {
-        if (playerRef.current) {
-          try {
-            playerRef.current.play?.();
-          } catch (err) {
-            console.error("Error retrying playback:", err);
-          }
-        }
-      }, 2000);
-    }
-  }, []);
-
-  const handlePlay = useCallback(() => {
-    setHasError(false);
-    setErrorMessage("");
-    if (onPlayStatusChange) onPlayStatusChange(true);
-  }, [onPlayStatusChange]);
-
-  const handleStalled = useCallback(() => {
-    console.log("Video buffering...");
-  }, []);
-
-  const handlePause = useCallback(() => {
-    if (onPlayStatusChange) onPlayStatusChange(false);
-  }, [onPlayStatusChange]);
-
-  const handleEnded = useCallback(() => {
-    if (onPlayStatusChange) onPlayStatusChange(false);
-  }, [onPlayStatusChange]);
-
-  // Container styles
-  const containerStyles = fillContainer
-    ? {
-        width: "100%",
-        height: "100%",
+      if (onError) {
+        onError(error);
       }
-    : {
-        width: "100%",
-      };
 
-  // Render error state
-  if (hasError && !videoLoaded) {
-    return (
-      <div
-        className={`${styles.muxVideoContainer} ${styles.error} ${className}`}
-        style={{
-          ...containerStyles,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#1a1a1a",
-          padding: "20px",
-          textAlign: "center",
-          minHeight: "200px",
-        }}
-      >
-        <div style={{ color: "white", fontSize: "14px" }}>
-          <p style={{ marginBottom: "10px" }}>⚠️ {errorMessage}</p>
-          <button
-            onClick={() => {
-              setHasError(false);
-              setErrorMessage("");
-              retryCount.current = 0;
-              if (playerRef.current) {
-                playerRef.current.play?.();
-              }
-            }}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "var(--accent-color)",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "12px",
-            }}
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
+      // Automatic retry with exponential backoff
+      if (retryCount < maxRetries) {
+        const delay = Math.pow(2, retryCount) * 1000;
+        setTimeout(() => {
+          setRetryCount((prev) => prev + 1);
+          setHasError(false);
+          if (playerRef.current) {
+            playerRef.current.load();
+          }
+        }, delay);
+      }
+    },
+    [onError, retryCount]
+  );
 
-  // Render loading state
-  if (!isReady) {
-    return (
-      <div
-        className={`${styles.muxVideoContainer} ${styles.skeleton} ${className}`}
-        style={{
-          ...containerStyles,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: fillContainer ? "100%" : "200px",
-        }}
-      >
-        <TailChase color="var(--accent-color)" size={40} />
-      </div>
-    );
-  }
+  const handleLoadStart = useCallback(
+    (e) => {
+      if (onLoadStart) {
+        onLoadStart(e);
+      }
+    },
+    [onLoadStart]
+  );
 
-  // Render video player
+  const handleCanPlay = useCallback(
+    (e) => {
+      setHasError(false);
+      if (onCanPlay) {
+        onCanPlay(e);
+      }
+    },
+    [onCanPlay]
+  );
+
   return (
     <div
-      className={`${styles.muxVideoContainer} ${
-        videoLoaded ? styles.loaded : ""
-      } ${className}`}
-      style={containerStyles}
-      data-aspect-ratio={detectedAspectRatio}
+      className={styles.playerContainer}
+      style={{
+        aspectRatio: getAspectRatioValue(),
+        "--play-button-color": playButtonColor,
+        "--progress-bar-color": progressBarColor,
+        "--loading-spinner-color": loadingSpinnerColor,
+      }}
     >
+      {isLoading && (
+        <div className={styles.skeleton}>
+          <div className={styles.skeletonPulse}></div>
+        </div>
+      )}
+
+      {!isLoading && hasError && retryCount >= maxRetries && (
+        <div className={styles.errorContainer}>
+          <div className={styles.errorContent}>
+            <svg
+              className={styles.errorIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="12" cy="12" r="10" strokeWidth="2" />
+              <line x1="12" y1="8" x2="12" y2="12" strokeWidth="2" />
+              <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="2" />
+            </svg>
+            <p className={styles.errorText}>Failed to load video</p>
+            <button
+              className={styles.retryButton}
+              onClick={() => {
+                setRetryCount(0);
+                setHasError(false);
+                if (playerRef.current) {
+                  playerRef.current.load();
+                }
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
       <MuxPlayer
         ref={playerRef}
-        streamType="on-demand"
         playbackId={playbackId}
-        poster={posterUrl}
         autoPlay={autoPlay}
         loop={loop}
         controls={controls}
-        thumbnailTime={thumbnailTime}
-        onLoadedMetadata={handleLoadedMetadata}
+        muted={muted}
+        poster={posterUrl}
+        preload={preload}
+        className={styles.muxPlayer}
         onError={handleError}
-        onPlay={handlePlay}
-        onPause={handlePause}
-        onEnded={handleEnded}
-        onStalled={handleStalled}
-        primaryColor="var(--accent-color)"
-        accentColor="white"
-        secondaryColor="transparent"
-        preload="metadata"
-        muted={autoPlay}
-        playsInline={true}
-        disablePictureInPicture={false}
-        preferPlayback="mse"
-        metadata={{
-          video_id: playbackId,
-          video_title: "Video",
-        }}
+        onLoadStart={handleLoadStart}
+        onCanPlay={handleCanPlay}
         style={{
-          width: "100%",
-          height: "100%",
-          display: "block",
-          backgroundColor: "transparent",
+          opacity: isLoading || (hasError && retryCount >= maxRetries) ? 0 : 1,
+          transition: "opacity 0.3s ease-in-out",
         }}
+        accentColor={"var(--accent-color)"}
+        primaryColor="white"
+        secondaryColor="transparent"
+        {...rest}
       />
     </div>
   );
-};
-
-export default Video;
+}

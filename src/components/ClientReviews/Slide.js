@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./Slide.module.css";
 import Image from "next/image";
 import Video from "../VideoPlayer/Video";
@@ -59,18 +59,6 @@ const CLIENT_DATA = [
 
 function Slide() {
   const [aspectRatios, setAspectRatios] = useState({});
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
-  const handleAspectRatioDetected = (clientId, aspectRatio) => {
-    setAspectRatios((prev) => ({
-      ...prev,
-      [clientId]: aspectRatio,
-    }));
-  };
-
-  const handleVideoPlayStatusChange = (isPlaying) => {
-    setIsVideoPlaying(isPlaying);
-  };
 
   return (
     <div className={`${styles.carouselWrapper}`}>
@@ -82,10 +70,9 @@ function Slide() {
           pauseOnHover={true}
           dragAble={true}
           wheelGesture={true}
-          pauseOnVideoPlay={isVideoPlaying}
         >
           {CLIENT_DATA.map((client) => {
-            const aspectRatio = aspectRatios[client.id] || "9/16"; // Default to portrait
+            const aspectRatio = aspectRatios[client.id] || "9/16";
 
             return (
               <div key={client.id} className={styles.slide}>
@@ -98,16 +85,10 @@ function Slide() {
                   }}
                 >
                   <Video
-                    maxWidth={false}
                     playbackId={client.video}
                     poster={client.poster}
-                    fillContainer={true}
+                    aspectRatio={aspectRatio}
                     preload="none"
-                    onAspectRatioDetected={(ratio) =>
-                      handleAspectRatioDetected(client.id, ratio)
-                    }
-                    onPlayStatusChange={handleVideoPlayStatusChange}
-                    aria-label={`Testimonial video from ${client.name}, ${client.role}`}
                   />
                 </div>
 
