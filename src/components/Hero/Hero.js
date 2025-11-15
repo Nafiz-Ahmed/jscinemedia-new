@@ -176,7 +176,7 @@ function Hero() {
 
             <div ref={descriptionRef} className={styles.paragraph}>
               From raw footage to polished videos that grow your audience &
-              leads fast turnarounds, subscription pricing.
+              leads.
             </div>
 
             <div ref={clientRef} className={styles.clientHolder}>
