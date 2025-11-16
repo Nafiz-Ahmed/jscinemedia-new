@@ -46,7 +46,6 @@
   color: white;
   font-size: var(--paragraph-text);
   width: 100%;
-  max-width: 550px;
   text-align: center;
   line-height: 1.6;
 }

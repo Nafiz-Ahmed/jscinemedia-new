@@ -16,6 +16,7 @@ const InfiniteScrollCarousel = ({
   dragAble = false,
   wheelGesture = false,
   padding,
+  shouldAutoScroll = true, // New prop to control auto-scroll
 }) => {
   // Memoize options to prevent unnecessary re-renders
   const options = useMemo(
@@ -32,21 +33,23 @@ const InfiniteScrollCarousel = ({
     [axis, dragAble]
   );
 
-  // Memoize plugins to prevent recreation on each render
+  // Memoize plugins - conditionally include AutoScroll
   const plugins = useMemo(
     () =>
       [
-        AutoScroll({
-          speed,
-          direction: direction === "forward" ? "forward" : "backward",
-          stopOnInteraction: false,
-          stopOnMouseEnter: pauseOnHover,
-          startDelay: 0,
-          playOnInit: true,
-        }),
+        shouldAutoScroll
+          ? AutoScroll({
+              speed,
+              direction: direction === "forward" ? "forward" : "backward",
+              stopOnInteraction: false,
+              stopOnMouseEnter: pauseOnHover,
+              startDelay: 0,
+              playOnInit: true,
+            })
+          : null,
         wheelGesture ? WheelGesturesPlugin() : null,
       ].filter(Boolean),
-    [speed, direction, pauseOnHover, wheelGesture]
+    [speed, direction, pauseOnHover, wheelGesture, shouldAutoScroll]
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options, plugins);

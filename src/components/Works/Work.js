@@ -197,7 +197,7 @@ function Work() {
                       thumbnailTime={video.thumbnailTime}
                       aspectRatio={video.aspectRatio}
                       poster={video.poster}
-                      preload="none"
+                      preload="auto"
                     />
                   </div>
                 ))}

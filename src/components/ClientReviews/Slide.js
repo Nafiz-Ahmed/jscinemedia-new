@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./Slide.module.css";
 import Image from "next/image";
 import Video from "../VideoPlayer/Video";
@@ -59,6 +59,56 @@ const CLIENT_DATA = [
 
 function Slide() {
   const [aspectRatios, setAspectRatios] = useState({});
+  const [playingVideos, setPlayingVideos] = useState(new Set());
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const resumeTimeoutRef = useRef(null);
+
+  // Tweakable configuration
+  const CAROUSEL_LOCK_ENABLED = true; // Set to false to disable carousel locking
+  const RESUME_DELAY_MS = 1000; // Delay before carousel resumes after all videos stop
+
+  // Handle video play/pause state changes
+  const handleVideoPlayStateChange = useCallback((videoId, isPlaying) => {
+    setPlayingVideos((prev) => {
+      const newSet = new Set(prev);
+      if (isPlaying) {
+        newSet.add(videoId);
+      } else {
+        newSet.delete(videoId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Control auto-scroll based on video playback
+  useEffect(() => {
+    if (!CAROUSEL_LOCK_ENABLED) return;
+
+    // Clear any pending resume timeout
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
+    }
+
+    if (playingVideos.size > 0) {
+      // At least one video is playing - stop auto-scroll immediately
+      setShouldAutoScroll(false);
+      console.log("Auto-scroll disabled - video playing");
+    } else {
+      // No videos playing - resume auto-scroll after delay
+      resumeTimeoutRef.current = setTimeout(() => {
+        setShouldAutoScroll(true);
+        console.log("Auto-scroll enabled - no videos playing");
+      }, RESUME_DELAY_MS);
+    }
+
+    // Cleanup
+    return () => {
+      if (resumeTimeoutRef.current) {
+        clearTimeout(resumeTimeoutRef.current);
+      }
+    };
+  }, [playingVideos, CAROUSEL_LOCK_ENABLED, RESUME_DELAY_MS]);
 
   return (
     <div className={`${styles.carouselWrapper}`}>
@@ -67,9 +117,10 @@ function Slide() {
           axis="x"
           gap={20}
           speed={1}
-          pauseOnHover={true}
+          pauseOnHover={shouldAutoScroll} // Only pause on hover when auto-scroll is active
           dragAble={true}
           wheelGesture={true}
+          shouldAutoScroll={shouldAutoScroll}
         >
           {CLIENT_DATA.map((client) => {
             const aspectRatio = aspectRatios[client.id] || "9/16";
@@ -88,7 +139,8 @@ function Slide() {
                     playbackId={client.video}
                     poster={client.poster}
                     aspectRatio={aspectRatio}
-                    preload="none"
+                    preload="auto"
+                    onPlayStateChange={handleVideoPlayStateChange}
                   />
                 </div>
 

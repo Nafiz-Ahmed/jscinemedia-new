@@ -133,6 +133,10 @@ mux-player::part(center play button) {
   opacity: 0.4;
 }
 
+mux-player[playing]::part(center play button) {
+  opacity: 0;
+}
+
 mux-player:hover::part(center play button) {
   opacity: 0.7;
 }
