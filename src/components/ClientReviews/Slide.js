@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./Slide.module.css";
 import Image from "next/image";
-import Video from "../VideoPlayer/Video";
+import VideoPlayer from "../CustomVideoPlayer/VideoPlayer";
 import InfiniteScrollCarousel from "../../layouts/InfiniteScrollCarousel";
 
 const CLIENT_DATA = [
@@ -12,48 +12,48 @@ const CLIENT_DATA = [
     name: "Joe Sinclair",
     role: "Co-founder/NattyPLUS",
     photo: "/images/TestimonialImages/avater1.jpg",
-    video: "I4yjCR3AjOP4ozKXf701WX4DE6NaIoed9UuqUTksWYVQ",
-    poster: "/images/TestimonialImages/Image1.jpg",
+    video: "/videos/testimonials/1.mp4",
+    poster: "/videos/posters/testimonials/1.webp",
   },
   {
     id: 2,
     name: "James Barker",
     role: "Founder/GTM Hive",
     photo: "/images/TestimonialImages/avater2.jpg",
-    video: "5IDKG2e00x702zA201TzEumSQlV18twudMqoCq91nBKwMM",
-    poster: "/images/TestimonialImages/Image2.jpg",
+    video: "/videos/testimonials/2.mp4",
+    poster: "/videos/posters/testimonials/2.webp",
   },
   {
     id: 3,
     name: "Ali Dar",
     role: "Senior Academic & Career Strategist",
     photo: "/images/TestimonialImages/avater3.jpg",
-    video: "WWnwvHlQw9tCoCbzQ94iQxDTsjQQ5dBN4LFPfIr9T1o",
-    poster: "/images/TestimonialImages/Image3.jpg",
+    video: "/videos/testimonials/3.mp4",
+    poster: "/videos/posters/testimonials/3.webp",
   },
   {
     id: 4,
     name: "Gavin Speaks",
     role: "Spiritual Life Coach & Consciousness Mentor",
     photo: "/images/TestimonialImages/avater4.png",
-    video: "Uw79TttQmTsUljSgoKv1Eyn024BjqtBwUtXVDfi2IQ6E",
-    poster: "/images/TestimonialImages/Image4.png",
+    video: "/videos/testimonials/4.mp4",
+    poster: "/videos/posters/testimonials/4.webp",
   },
   {
     id: 5,
     name: "Derek",
     role: "Owner of Functional Decor",
     photo: "/images/TestimonialImages/avater5.jpg",
-    video: "BYxX402Lnm95q87RTkgLwJtiXqAroRwAZntsJeN01DXKQ",
-    poster: "/images/TestimonialImages/Image5.jpg",
+    video: "/videos/testimonials/5.mp4",
+    poster: "/videos/posters/testimonials/5.webp",
   },
   {
     id: 6,
     name: "Jessica Phillips",
     role: "Founder & CEO, The Social Standard",
     photo: "/images/TestimonialImages/avater6.png",
-    video: "rhr2sKVJHVU5wzBwtkz2NEWM3dJwiwTbyqyZWZVi4YY",
-    poster: "/images/TestimonialImages/Image6.png",
+    video: "/videos/testimonials/6.mp4",
+    poster: "/videos/posters/testimonials/6.webp",
   },
 ];
 
@@ -64,8 +64,8 @@ function Slide() {
   const resumeTimeoutRef = useRef(null);
 
   // Tweakable configuration
-  const CAROUSEL_LOCK_ENABLED = true; // Set to false to disable carousel locking
-  const RESUME_DELAY_MS = 1000; // Delay before carousel resumes after all videos stop
+  const CAROUSEL_LOCK_ENABLED = true;
+  const RESUME_DELAY_MS = 1000;
 
   // Handle video play/pause state changes
   const handleVideoPlayStateChange = useCallback((videoId, isPlaying) => {
@@ -84,25 +84,21 @@ function Slide() {
   useEffect(() => {
     if (!CAROUSEL_LOCK_ENABLED) return;
 
-    // Clear any pending resume timeout
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current);
       resumeTimeoutRef.current = null;
     }
 
     if (playingVideos.size > 0) {
-      // At least one video is playing - stop auto-scroll immediately
       setShouldAutoScroll(false);
       console.log("Auto-scroll disabled - video playing");
     } else {
-      // No videos playing - resume auto-scroll after delay
       resumeTimeoutRef.current = setTimeout(() => {
         setShouldAutoScroll(true);
         console.log("Auto-scroll enabled - no videos playing");
       }, RESUME_DELAY_MS);
     }
 
-    // Cleanup
     return () => {
       if (resumeTimeoutRef.current) {
         clearTimeout(resumeTimeoutRef.current);
@@ -117,7 +113,7 @@ function Slide() {
           axis="x"
           gap={20}
           speed={1}
-          pauseOnHover={shouldAutoScroll} // Only pause on hover when auto-scroll is active
+          pauseOnHover={shouldAutoScroll}
           dragAble={true}
           wheelGesture={true}
           shouldAutoScroll={shouldAutoScroll}
@@ -135,11 +131,11 @@ function Slide() {
                     width: aspectRatio === "16/9" ? "533px" : "300px",
                   }}
                 >
-                  <Video
-                    playbackId={client.video}
-                    poster={client.poster}
+                  <VideoPlayer
+                    videoId={client.id} // Added this prop
+                    videoSrc={client.video}
+                    posterSrc={client.poster}
                     aspectRatio={aspectRatio}
-                    preload="auto"
                     onPlayStateChange={handleVideoPlayStateChange}
                   />
                 </div>

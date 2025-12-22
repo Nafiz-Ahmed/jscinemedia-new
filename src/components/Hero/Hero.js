@@ -10,7 +10,7 @@ import { useNavigateToId, useScroll } from "@/layouts/ScrollContext";
 import MovingCirclesBackground from "@/layouts/MovingCirclesBackground";
 import GradientText from "@/layouts/GradientText";
 import CustomTab from "../CustomTab/CustomTab";
-import Video from "../VideoPlayer/Video";
+import VideoPlayer from "../CustomVideoPlayer/VideoPlayer";
 import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import { useTextRevealAnimation } from "@/hooks/useTextRevealAnimation"; // Import the hook
 
@@ -194,7 +194,12 @@ function Hero() {
             </div>
 
             <div ref={cardRef} className={`addAnimation ${styles.card}`}>
-              <Video playbackId={VSL_VIDEO} poster={"/images/VSL.jpg"} />
+              <VideoPlayer
+                videoSrc="/videos/master.m3u8"
+                type="application/x-mpegurl"
+                posterSrc="/videos/posters/VSLposter.jpg"
+                aspectRatio="16:9"
+              />
             </div>
           </div>
         </div>
