@@ -13,11 +13,27 @@
   background-color: var(--accent-color);
 }
 
+.playerWrapper :global([data-media-player][data-layout="video"]) {
+  border: none !important;
+}
+
+.playerWrapper > * {
+  border: none !important;
+}
+
+.player {
+  background-color: black;
+
+  /* Ensures nothing spills out causing borders */
+  overflow: hidden;
+  border-radius: 8px;
+}
+
 .playerWrapper {
   width: 100%;
   height: 100%;
   position: relative;
-  border-radius: 8px;
+  border-radius: 1px;
   overflow: hidden;
 }
 
@@ -30,7 +46,7 @@
   opacity: 0;
   width: 100%;
   height: 100%;
-  background-color: transparent;
+  background-color: black;
   z-index: 2; /* Lower z-index than the button */
   opacity: 1;
   transition: opacity 0.3s ease;

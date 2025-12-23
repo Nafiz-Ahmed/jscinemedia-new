@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./Contacts.module.css";
-import GradientText from "@/layouts/GradientText";
+// import GradientText from "@/layouts/GradientText"; // Unused in your snippet, kept if needed
 import Container from "@/layouts/Container";
 import { useCalendlyEventListener, InlineWidget } from "react-calendly";
 import { useInView } from "@/hooks/useInView";
@@ -18,22 +18,43 @@ function Contacts() {
   });
 
   const [height, setHeight] = useState("600px");
-  const { ref, isInView } = useInView({ threshold: 0.25 });
+  // const { ref, isInView } = useInView({ threshold: 0.25 });
 
   useCalendlyEventListener({
     onPageHeightResize: (e) => setHeight(e.data.payload.height),
   });
 
+  // Helper to toggle global cursor state
+  const handleMouseEnter = () =>
+    document.body.classList.add("hovering-iframe-wrapper");
+  const handleMouseLeave = () =>
+    document.body.classList.remove("hovering-iframe-wrapper");
+
+  const handleMouseEnterIframe = () =>
+    document.body.classList.add("hovering-iframe");
+  const handleMouseLeaveIframe = () =>
+    document.body.classList.remove("hovering-iframe");
+
   return (
     <Container>
-      <div className={styles.wrapper}>
+      <div
+        /* 2. Toggles the class that hides your custom cursor via CSS */
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={styles.wrapper}
+      >
         <div ref={titleRef} className={styles.title}>
           <Title>
             Ready to <span>level up?</span> Let’s connect.
           </Title>
         </div>
-        <div ref={ref} className={styles.calendly}>
-          {/* Use InlineWidget's LoadingSpinner prop for loader */}
+
+        {/* --- WRAPPER UPDATES --- */}
+        <div
+          onMouseEnter={handleMouseEnterIframe}
+          onMouseLeave={handleMouseLeaveIframe}
+          className={styles.calendly}
+        >
           <InlineWidget
             url="https://calendly.com/sazzadedits/30min"
             pageSettings={{
@@ -44,7 +65,8 @@ function Contacts() {
               width: "100%",
               height,
               minHeight: "600px",
-              pointerEvents: "auto",
+              minWidth: "320px", // Critical for proper rendering
+              pointerEvents: "auto", // Keeps interaction enabled
               border: "1px solid var(--border-color)",
               borderRadius: "15px",
               overflow: "hidden",

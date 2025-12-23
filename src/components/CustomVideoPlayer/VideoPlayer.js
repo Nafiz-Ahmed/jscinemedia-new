@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react"; // 1. Import useRef
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
 
@@ -9,6 +9,7 @@ import {
   MediaProvider,
   Poster,
   PlayButton,
+  useMediaState, // 2. Import useMediaState
 } from "@vidstack/react";
 
 import {
@@ -26,11 +27,19 @@ export default function VideoPlayer({
   videoId,
   onPlayStateChange,
 }) {
+  // 3. Create a ref for the player
+  const player = useRef(null);
+
+  // 4. Access the 'canPlay' state (true when video is ready)
+  const canPlay = useMediaState("canPlay", player);
+
   const parsedRatio = aspectRatio ? aspectRatio.replace(":", "/") : "16/9";
   const finalSrc = type ? { src: videoSrc, type: type } : videoSrc;
+
   return (
     <div className={styles.playerWrapper}>
       <MediaPlayer
+        ref={player} // 5. Attach the ref here
         className={styles.player}
         src={finalSrc}
         aspectRatio={parsedRatio}
@@ -51,7 +60,8 @@ export default function VideoPlayer({
           {posterSrc && <Poster src={posterSrc} className={styles.poster} />}
         </MediaProvider>
 
-        {posterSrc && (
+        {/* 6. Add 'canPlay' to the condition */}
+        {canPlay && (
           <div className={styles.centerButtonContainer}>
             <PlayButton className={styles.bigPlayButton}>
               <svg

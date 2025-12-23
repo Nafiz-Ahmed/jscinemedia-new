@@ -112,7 +112,7 @@ function Slide() {
         <InfiniteScrollCarousel
           axis="x"
           gap={20}
-          speed={1}
+          speed={0.5}
           pauseOnHover={shouldAutoScroll}
           dragAble={true}
           wheelGesture={true}

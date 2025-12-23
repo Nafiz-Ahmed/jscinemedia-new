@@ -7,95 +7,109 @@ import {
   useRef,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 import gsap from "gsap";
-import ScrollSmoother from "gsap/ScrollSmoother";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import Lenis from "lenis"; // Make sure to install: npm i lenis
 import NavBar from "@/components/NavBar/NavBar";
 
-// Register plugins globally
-if (typeof window !== "undefined" && !gsap.core.globals()["ScrollSmoother"]) {
-  gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
+// Register ScrollTrigger (ScrollSmoother is no longer needed)
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
 }
 
 const ScrollContext = createContext(null);
 
 export function ScrollProvider({ children }) {
-  const smootherRef = useRef(null);
+  // Refs
+  const lenisRef = useRef(null);
   const cursorRef = useRef(null);
+  const tickerRef = useRef(null);
 
-  const [smoother, setSmoother] = useState(null);
+  // State
+  const [lenisInstance, setLenisInstance] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Breakpoints
   const MOBILE_BREAKPOINT = 768;
   const TABLET_BREAKPOINT = 1023;
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined"
-      ? window.innerWidth <= MOBILE_BREAKPOINT
-      : false
-  );
-  const [isTablet, setIsTablet] = useState(
-    typeof window !== "undefined"
-      ? window.innerWidth > MOBILE_BREAKPOINT &&
-          window.innerWidth <= TABLET_BREAKPOINT
-      : false
-  );
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
-  // Update mobile/tablet state on resize
+  // 1. Handle Resize & Breakpoints
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-      setIsTablet(
-        window.innerWidth > MOBILE_BREAKPOINT &&
-          window.innerWidth <= TABLET_BREAKPOINT
-      );
-      smootherRef.current?.refresh();
+      const w = window.innerWidth;
+      setIsMobile(w <= MOBILE_BREAKPOINT);
+      setIsTablet(w > MOBILE_BREAKPOINT && w <= TABLET_BREAKPOINT);
+      // Lenis auto-resizes, but we force ScrollTrigger to check positions
+      ScrollTrigger.refresh();
     };
+
+    // Initial check
+    handleResize();
+
     window.addEventListener("resize", handleResize, { passive: true });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Initialize ScrollSmoother
+  // 2. Initialize Lenis (Replaces ScrollSmoother)
   useLayoutEffect(() => {
-    const wrapper = document.getElementById("smooth-wrapper");
-    const content = document.getElementById("smooth-content");
-    if (!wrapper || !content) return;
+    // Cleanup previous instances
+    if (lenisRef.current) lenisRef.current.destroy();
+    ScrollTrigger.getAll().forEach((t) => t.kill());
 
-    try {
-      smootherRef.current?.kill();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // standard ease
+      direction: "vertical",
+      gestureDirection: "vertical",
+      smooth: true,
+      smoothTouch: false, // Lenis usually recommends native touch on mobile
+      touchMultiplier: 2,
+    });
 
-      const instance = ScrollSmoother.create({
-        wrapper: "#smooth-wrapper",
-        content: "#smooth-content",
-        smooth: 1,
-        smoothTouch: 0.1,
-        effects: true,
-        normalizeScroll: true,
-      });
+    lenisRef.current = lenis;
+    setLenisInstance(lenis);
 
-      smootherRef.current = instance;
-      setSmoother(instance);
-      setIsReady(true);
-    } catch (e) {
-      console.warn("ScrollSmoother init failed:", e);
-    }
+    // --- CRITICAL: Sync Lenis with GSAP ScrollTrigger ---
+    lenis.on("scroll", ScrollTrigger.update);
+
+    // Create a ticker to update Lenis on every GSAP frame
+    tickerRef.current = (time) => {
+      lenis.raf(time * 1000);
+    };
+
+    // Add to GSAP ticker and disable lag smoothing for instant sync
+    gsap.ticker.add(tickerRef.current);
+    gsap.ticker.lagSmoothing(0);
+
+    setIsReady(true);
 
     return () => {
-      smootherRef.current?.kill();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      smootherRef.current = null;
+      // Cleanup
+      if (tickerRef.current) gsap.ticker.remove(tickerRef.current);
+      lenis.destroy();
+      lenisRef.current = null;
+      setLenisInstance(null);
       setIsReady(false);
+      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
 
-  // Pause smoother during loading
+  // 3. Pause/Resume Logic (Mapped to Loading)
   useEffect(() => {
-    smootherRef.current?.paused(isLoading);
+    if (!lenisRef.current) return;
+    if (isLoading) {
+      lenisRef.current.stop();
+    } else {
+      lenisRef.current.start();
+    }
   }, [isLoading]);
 
-  // Cursor follower (desktop only)
+  // 4. Cursor Follower (Unchanged)
   useEffect(() => {
     if (!cursorRef.current || isMobile || isTablet) return;
 
@@ -133,24 +147,26 @@ export function ScrollProvider({ children }) {
     };
   }, [isMobile, isTablet]);
 
-  // Navigation helper
+  // 5. Navigate Helper (Refactored for Lenis)
   const navigateToId = useCallback(
-    (id, { duration = 1.5, ease = "power2.out", onComplete, onStart } = {}) => {
-      if (!smootherRef.current) return;
+    (id, { duration = 1.5, ease, onComplete, onStart } = {}) => {
+      if (!lenisRef.current) return;
       const target = document.getElementById(id);
       if (!target) return console.warn(`Element with id "${id}" not found`);
 
       try {
-        onStart?.();
-      } catch (e) {
-        console.warn("onStart callback error:", e);
-      }
+        if (onStart) onStart();
 
-      try {
-        smootherRef.current.scrollTo(target, true);
-        setTimeout(() => {
-          onComplete?.();
-        }, duration * 1000);
+        lenisRef.current.scrollTo(target, {
+          duration: duration, // Lenis accepts duration in seconds usually, or depends on config
+          // Note: Lenis default scrollTo uses its internal easing.
+          // If you need specific easing you might need a GSAP tween of the scroll position,
+          // but usually Lenis native scrollTo is smoother.
+          lock: true,
+          onComplete: () => {
+            if (onComplete) onComplete();
+          },
+        });
       } catch (e) {
         console.warn("navigateToId failed:", e);
       }
@@ -158,43 +174,53 @@ export function ScrollProvider({ children }) {
     []
   );
 
-  // Context value
-  const value = {
-    smoother,
-    isReady,
-    isMobile,
-    isTablet,
-    isLoading,
-    setIsLoading,
-    scrollTo: useCallback((target, smooth = true) => {
-      smootherRef.current?.scrollTo(target, smooth);
-    }, []),
-    navigateToId,
-    refresh: useCallback(() => smootherRef.current?.refresh(), []),
-    waitForReady: useCallback(
-      (callback) => {
+  // 6. Context Value Construction
+  const value = useMemo(
+    () => ({
+      // We map 'lenis' to 'smoother' to keep your app from breaking if it uses context.smoother
+      smoother: lenisInstance,
+      lenis: lenisInstance, // New standard key
+      isReady,
+      isMobile,
+      isTablet,
+      isLoading,
+      setIsLoading,
+      scrollTo: (target, smooth = true) => {
+        lenisRef.current?.scrollTo(target, { immediate: !smooth });
+      },
+      navigateToId,
+      refresh: () => {
+        lenisRef.current?.resize();
+        ScrollTrigger.refresh();
+      },
+      waitForReady: (callback) => {
         if (!callback || typeof callback !== "function") return;
         const check = () => {
-          if (isReady && smootherRef.current) callback();
+          if (lenisRef.current) callback();
           else requestAnimationFrame(check);
         };
         check();
       },
-      [isReady]
-    ),
-  };
+    }),
+    [lenisInstance, isReady, isMobile, isTablet, isLoading, navigateToId]
+  );
 
   return (
     <ScrollContext.Provider value={value}>
       <NavBar />
-      <div id="smooth-wrapper">
-        <div id="smooth-content">{children}</div>
-      </div>
+      {/* NOTE: I removed <div id="smooth-wrapper"> because Lenis works best 
+         scrolling the html/body directly. This is cleaner and less buggy.
+      */}
+      {children}
+
       {!isMobile && !isTablet && (
         <div
+          id="custom-cursor"
           ref={cursorRef}
           style={{
             position: "fixed",
+            left: 0,
+            top: 0,
             width: "20px",
             height: "20px",
             borderRadius: "50%",
@@ -210,6 +236,7 @@ export function ScrollProvider({ children }) {
   );
 }
 
+// --- Hooks (Unchanged) ---
 export const useScroll = () => {
   const context = useContext(ScrollContext);
   if (!context)

@@ -1,3 +1,4 @@
+/* 1. RESET & FUNDAMENTALS */
 * {
   margin: 0;
   padding: 0;
@@ -6,81 +7,73 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none; /* optional: prevents long-press context menus */
+  -webkit-touch-callout: none;
   z-index: 2;
 }
 
-#smooth-content {
-  will-change: transform;
+html {
+  /* 2. HIDE SCROLLBARS (Firefox & IE/Edge) */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-#smooth-wrapper {
-  height: 100%;
-  width: 100%;
-  overflow: hidden; /* Prevent native overflow */
-}
-
-/* Hide scrollbar for Chrome, Safari, Edge */
+/* 2. HIDE SCROLLBARS (Chrome, Safari, Opera) */
 ::-webkit-scrollbar {
+  display: none;
   width: 0;
   height: 0;
   background: transparent;
 }
 
-/* Hide scrollbar for Firefox */
-html {
-  scrollbar-width: none;
-  -ms-overflow-style: none; /* IE 10+ */
-  overflow: -moz-scrollbars-none; /* Older Firefox */
-}
-
-/* Hide scrollbar in Chrome, Safari, Edge */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar in Firefox */
-html {
-  scrollbar-width: none; /* hides scrollbar */
-}
-
-/* Hide scrollbar in IE/Edge Legacy */
-html {
-  -ms-overflow-style: none;
-}
-
-/* Hide scrollbar for IE/Edge */
 body {
-  -ms-overflow-style: none;
-}
-
-/* Ensure scrolling still works */
-html,
-body {
-  font-family: var(--font-satoshi);
-  overflow: unset !important;
-  height: 100%;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   background-color: var(--primary-black);
   color: var(--white-text);
+  font-family: var(--font-satoshi);
+  width: 100%;
+  min-height: 100vh;
+  /* Remove 'overflow: unset' if it causes issues, but usually fine with Lenis */
+  overflow-x: hidden;
+}
+.hovering-iframe > #custom-cursor {
+  opacity: 0 !important;
 }
 
+/* 3. LENIS RECOMMENDED STYLES */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* --- 4. FIX FOR IFRAME JITTER (CALENDLY) --- */
+/* This disables mouse events on iframes ONLY while scrolling. 
+   It prevents the iframe from "catching" the scroll and causing lag. */
+/* .lenis.lenis-scrolling iframe {
+  pointer-events: none;
+} */
+
+/* 5. UTILITIES */
 .container {
   width: 100%;
   max-width: 1240px;
-  margin: var(--margin-auto);
+  margin: 0 auto;
   padding: 0 20px;
 }
-
-/* @media screen and (max-width: 768px) {
-  .container {
-    padding: 0 10px;
-  }
-} */
 
 .addAnimation {
   visibility: hidden;
   opacity: 0;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none !important;
 }
 
 svg {
@@ -127,16 +120,4 @@ a {
     #704d4d00 80%,
     var(--primary-black)
   );
-}
-
-mux-player::part(center play button) {
-  opacity: 0.4;
-}
-
-mux-player[playing]::part(center play button) {
-  opacity: 0;
-}
-
-mux-player:hover::part(center play button) {
-  opacity: 0.7;
 }

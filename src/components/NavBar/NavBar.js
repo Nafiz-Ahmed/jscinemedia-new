@@ -224,14 +224,15 @@ export default function NavBar() {
   useEffect(() => {
     if (isMobileMenuOpen) {
       setShouldRenderMenu(true);
-      // Prevent body scroll when menu is open
+
+      // LENIS UPDATE: Use .stop() to freeze scroll
       if (smoother) {
-        smoother.paused(true);
+        smoother.stop();
       }
     } else {
-      // Re-enable body scroll when menu closes
+      // LENIS UPDATE: Use .start() to resume scroll
       if (smoother) {
-        smoother.paused(false);
+        smoother.start();
       }
     }
   }, [isMobileMenuOpen, smoother]);
