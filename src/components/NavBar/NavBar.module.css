@@ -1,18 +1,18 @@
+/* NavBar.module.css */
 .navbar {
   width: 100%;
   position: fixed;
   top: 25px;
   left: 0;
   z-index: 10000;
+  margin: 0 auto;
   transition: opacity 0.5s ease;
-  /* Ensure no overflow issues */
-  box-sizing: border-box;
 }
 
 .navContent {
   width: 100%;
   max-width: var(--primary-content-width);
-  margin: 0 auto;
+  margin: var(--margin-auto);
   height: 74px;
   display: flex;
   justify-content: space-between;
@@ -29,10 +29,8 @@
     100%;
   backdrop-filter: blur(10px);
   position: relative;
-  /* REMOVED: overflow: hidden; -> This might clip the menu shadows */
+  overflow: hidden;
 }
-
-/* ... [Keep existing .logo, .links, .link, .active, .activeBar, .button CSS] ... */
 
 .logo {
   font-size: 18px;
@@ -67,6 +65,7 @@
   color: var(--accent-color);
 }
 
+/* Active bar that follows active/hovered link */
 .activeBar {
   position: absolute;
   opacity: 0;
@@ -99,32 +98,15 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* --- NEW: Mobile Overlay --- */
-.mobileOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 998; /* Behind menu (999), above page */
-  pointer-events: auto;
-}
-
 /* Mobile Menu */
 .mobileMenu {
   position: absolute;
-  /* Use fixed positioning for the menu to align it relative to the navbar container, 
-     OR relative if inside .navbar. 
-     Since it's direct child of .navbar (fixed), absolute works relative to it.
-  */
   top: calc(100% + 8px);
   left: 20px;
   right: 20px;
   max-width: var(--primary-content-width);
-  margin: 0 auto; /* Center it if screen is wider than max-width */
-  background-color: rgba(0, 0, 0, 0.6);
+  margin: var(--margin-auto);
+  background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -137,6 +119,10 @@
   justify-content: center;
 }
 
+.mobileMenu.open {
+  display: flex !important;
+}
+
 .mobileLinks {
   display: flex;
   flex-direction: column;
@@ -144,18 +130,17 @@
   justify-content: center;
   padding: 12px;
   gap: 4px;
-  width: 100%; /* Changed from fit-content to fill the menu width */
+  width: fit-content;
 }
 
 .mobileLink {
-  width: 100%;
   font-size: var(--normal-text);
   padding: 16px 20px;
   color: white;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: center; /* Centered looks better in this layout */
+  text-align: left;
 }
 
 .mobileLink:hover {
@@ -166,27 +151,47 @@
   margin-top: 8px;
   width: 100%;
   padding: 0 8px;
-  display: flex;
-  justify-content: center;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .navbar {
     top: 15px;
+    /* padding: 0 15px; */
   }
 
   .navContent {
     padding: 10px 16px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .links {
+    display: none;
+  }
+
+  .activeBar {
+    display: none;
+  }
+
+  .button {
+    display: none;
   }
 }
 
 @media (max-width: 480px) {
   .navbar {
     top: 10px;
+    /* padding: 0 10px; */
   }
 
   .navContent {
     padding: 8px 12px;
+  }
+
+  .logo {
+    font-size: 15px;
   }
 }

@@ -15,6 +15,7 @@ html {
   /* 2. HIDE SCROLLBARS (Firefox & IE/Edge) */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow-x: hidden;
 }
 
 /* 2. HIDE SCROLLBARS (Chrome, Safari, Opera) */
